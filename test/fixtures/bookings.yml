@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  room: one
+  start_time: 2025-03-02 22:15:01
+  end_time: 2025-03-02 22:15:01
+  created_at: 2025-03-02 22:15:01
+  complete: false
+  confirmation_code: MyString
+
+two:
+  user: two
+  room: two
+  start_time: 2025-03-02 22:15:01
+  end_time: 2025-03-02 22:15:01
+  created_at: 2025-03-02 22:15:01
+  complete: false
+  confirmation_code: MyString

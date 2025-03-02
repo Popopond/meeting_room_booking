@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @check_in %>
+
+<div>
+  <%= link_to "Edit this check in", edit_check_in_path(@check_in) %> |
+  <%= link_to "Back to check ins", check_ins_path %>
+
+  <%= button_to "Destroy this check in", @check_in, method: :delete %>
+</div>
