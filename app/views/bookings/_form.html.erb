@@ -1,6 +1,6 @@
 <%= form_with(model: booking) do |form| %>
   <% if booking.errors.any? %>
-    <div style="color: red">
+    <div class="text-red-500">
       <h2><%= pluralize(booking.errors.count, "error") %> prohibited this booking from being saved:</h2>
 
       <ul>
@@ -11,42 +11,49 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
+  <!-- Show User Name (auto-filled from current user) -->
+  <div class="mb-4">
+    <p class="text-lg text-gray-800">User: <%= current_user.username %></p> <!-- Show username -->
   </div>
 
-  <div>
-    <%= form.label :room_id, style: "display: block" %>
-    <%= form.text_field :room_id %>
+  <!-- Room selection (display as cards from the database) -->
+  <div class="mb-4">
+    <%= form.label :room_id, class: "block font-medium text-gray-700" %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <% Room.all.each do |room| %>
+        <div class="border p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+          <%= form.radio_button :room_id, room.id, class: "mr-2" %>
+          <%= form.label :room_id, room.name, value: room.id, class: "text-lg font-semibold" %>
+          <p class="text-sm text-gray-500"><%= room.description %></p>
+          <p class="text-sm text-gray-600">Capacity: <%= room.capacity %></p>
+        </div>
+      <% end %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :start_time, style: "display: block" %>
-    <%= form.datetime_field :start_time %>
+  <!-- Start Time -->
+  <div class="mb-4">
+    <%= form.label :start_time, class: "block font-medium text-gray-700" %>
+    <%= form.datetime_field :start_time, class: "block w-full mt-1 p-2 border border-gray-300 rounded-md" %>
   </div>
 
-  <div>
-    <%= form.label :end_time, style: "display: block" %>
-    <%= form.datetime_field :end_time %>
+  <!-- End Time -->
+  <div class="mb-4">
+    <%= form.label :end_time, class: "block font-medium text-gray-700" %>
+    <%= form.datetime_field :end_time, class: "block w-full mt-1 p-2 border border-gray-300 rounded-md" %>
   </div>
 
-  <div>
-    <%= form.label :created_at, style: "display: block" %>
-    <%= form.datetime_field :created_at %>
+  <!-- Created_at (auto-filled by Rails after save) -->
+  <div class="mb-4">
+    <%= form.hidden_field :created_at, value: Time.now, class: "block w-full mt-1 p-2 border border-gray-300 rounded-md" %>
   </div>
 
-  <div>
-    <%= form.label :complete, style: "display: block" %>
-    <%= form.checkbox :complete %>
+  <!-- Complete status (auto-filled based on business logic) -->
+  <div class="mb-4">
+    <%= form.hidden_field :complete, value: false, class: "block w-full mt-1 p-2 border border-gray-300 rounded-md" %>
   </div>
 
-  <div>
-    <%= form.label :confirmation_code, style: "display: block" %>
-    <%= form.text_field :confirmation_code %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="mt-4">
+    <%= form.submit "Create Booking", class: "w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none", data: { disable_with: "Creating..." } %>
   </div>
 <% end %>

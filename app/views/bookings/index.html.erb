@@ -5,12 +5,14 @@
 <h1>Bookings</h1>
 
 <div id="bookings">
+  <% if @bookings.any? %>
   <% @bookings.each do |booking| %>
-    <%= render booking %>
-    <p>
-      <%= link_to "Show this booking", booking %>
-    </p>
+    <p>Booking for <%= booking.room.name %> by <%= booking.user.username %></p>
   <% end %>
+<% else %>
+  <p class="text-gray-500">ยังไม่มีการจองห้องประชุม</p>
+<% end %>
+
 </div>
 
 <%= link_to "New booking", new_booking_path %>

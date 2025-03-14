@@ -1,83 +1,96 @@
 class BookingsController < ApplicationController
-  require 'rqrcode'
-  before_action :set_booking, only: %i[ show edit update destroy ]
-  before_action :authenticate_user!
-  # GET /bookings or /bookings.json
-  def index
-  # @bookings = Booking.all
-  bookings = Booking.includes(:room, :user).where("start_time >= ?", Time.now)
-  render json: bookings, include: [:room, :user]
-  end
+  before_action :set_booking, only: %i[show edit update destroy check_in]
 
-  # GET /bookings/1 or /bookings/1.json
+  def index
+    @bookings = Booking.includes(:room, :user).where("start_time >= ?", Time.now)
+  
+    if @bookings.empty?
+      flash[:notice] = "ยังไม่มีการจองห้องประชุม"
+    end
+  end
+  
+
   def show
     booking = Booking.find(params[:id])
-    render json: booking, include: [:room, :user]
+    render json: booking, include: [:room, :user, :check_in]
   end
 
-  # GET /bookings/new
   def new
     @booking = Booking.new
   end
 
-  # GET /bookings/1/edit
   def edit
   end
 
-  # POST /bookings or /bookings.json
   def create
     @booking = current_user.bookings.new(booking_params)
+    @booking.complete = false
   
     if @booking.save
-      render json: { message: "จองห้องประชุมสำเร็จ!", booking: @booking }, status: :created
+      # ✅ แก้ให้ดึงค่า Status ด้วย `status_name`
+      unavailable_status = Status.find_by(status_name: "Unavailable") 
+      @booking.room.update(status_id: unavailable_status&.id)
+  
+      # ✅ ตรวจสอบว่า Job ทำงานถูกต้องหรือไม่
+      if @booking.room.status_id == unavailable_status&.id
+        ReleaseRoomJob.set(wait_until: @booking.end_time).perform_later(@booking.id)
+        redirect_to bookings_path, notice: "Booking created successfully."
+      else
+        flash[:alert] = "เกิดข้อผิดพลาดในการอัปเดตสถานะห้อง"
+        redirect_to bookings_path
+      end
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+  
+  
+  
+  
+
+  def update
+    if @booking.update(booking_params)
+      render json: { message: "Booking was successfully updated.", booking: @booking }, status: :ok
     else
       render json: { errors: @booking.errors.full_messages }, status: :unprocessable_entity
     end
   end
-  
 
-  # PATCH/PUT /bookings/1 or /bookings/1.json
-  def update
-    respond_to do |format|
-      if @booking.update(booking_params)
-        format.html { redirect_to @booking, notice: "Booking was successfully updated." }
-        format.json { render :show, status: :ok, location: @booking }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @booking.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /bookings/1 or /bookings/1.json
   def destroy
     @booking = current_user.bookings.find(params[:id])
-  
+
     if @booking.destroy
       render json: { message: "ยกเลิกการจองสำเร็จ!" }, status: :ok
     else
       render json: { errors: "ไม่สามารถยกเลิกการจองได้" }, status: :unprocessable_entity
     end
   end
-  
 
-  def generate_qr
-    booking = Booking.find(params[:id])
-    qr = RQRCode::QRCode.new("https://yourwebsite.com/checkin?booking_id=#{booking.id}")
-    png = qr.as_png(size: 200).to_s
+  def check_in
+    if @booking.check_in_expired?
+      # หากเช็คอินหมดเวลาให้ห้องกลับเป็น available
+      @booking.room.update(available: true)
+      @booking.destroy
+      render json: { message: "การเช็คอินเกินเวลา ห้องถูกยกเลิก" }, status: :ok
+    else
+      @booking.check_in
+      render json: { message: "เช็คอินสำเร็จ!" }, status: :ok
+    end
+  end
+
+  private
+
+  def set_booking
+    unless params[:id] =~ /^\d+$/
+      render json: { error: "Invalid booking ID" }, status: :bad_request
+      return
+    end
   
-    send_data png, type: 'image/png', disposition: 'inline'
+    @booking = Booking.find(params[:id])
   end
   
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_booking
-      @booking = Booking.find(params[:id])
-    end
-
-    # Only allow a list of trusted parameters through.
-    def booking_params
-      params.require(:booking).permit(:room_id, :start_time, :end_time)
-    end
+  def booking_params
+    params.require(:booking).permit(:room_id, :start_time, :end_time)
+  end
 end
