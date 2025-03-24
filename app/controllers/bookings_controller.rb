@@ -80,7 +80,7 @@ class BookingsController < ApplicationController
   def cancel
     @booking = current_user.bookings.find(params[:id])
     
-    if @booking.update(complete: false)
+    if @booking.destroy
       # อัพเดทสถานะห้องให้ว่าง
       available_status = Status.find_by(status_name: "Available")
       @booking.room.update(status_id: available_status&.id)

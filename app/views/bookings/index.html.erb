@@ -14,9 +14,7 @@
           <% end %>
         </div>
 
-        <% if !booking.complete %>
-          <%= button_to "ยกเลิกการจอง", cancel_booking_path(booking), method: :patch, class: "bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition" %>
-        <% else %>
+        <% if booking.complete %>
           <span class="text-green-500">ยืนยันการจองแล้ว</span>
         <% end %>
       </div>
