@@ -1,5 +1,5 @@
 class BookingsController < ApplicationController
-  before_action :set_booking, only: %i[show edit update destroy check_in]
+  before_action :set_booking, only: %i[show edit update destroy check_in cancel]
 
   def index
     @bookings = Booking.includes(:room, :user).where("start_time >= ?", Time.now)
@@ -11,8 +11,7 @@ class BookingsController < ApplicationController
   
 
   def show
-    booking = Booking.find(params[:id])
-    render json: booking, include: [:room, :user, :check_in]
+    @booking = Booking.find(params[:id])
   end
 
   def new
@@ -75,6 +74,20 @@ class BookingsController < ApplicationController
     else
       @booking.check_in
       render json: { message: "เช็คอินสำเร็จ!" }, status: :ok
+    end
+  end
+
+  def cancel
+    @booking = current_user.bookings.find(params[:id])
+    
+    if @booking.update(complete: false)
+      # อัพเดทสถานะห้องให้ว่าง
+      available_status = Status.find_by(status_name: "Available")
+      @booking.room.update(status_id: available_status&.id)
+      
+      redirect_to bookings_path, notice: "ยกเลิกการจองสำเร็จ"
+    else
+      redirect_to bookings_path, alert: "ไม่สามารถยกเลิกการจองได้"
     end
   end
 

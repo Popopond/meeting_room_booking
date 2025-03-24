@@ -1,10 +1,30 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @booking %>
+<div class="container mx-auto p-6">
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-2xl font-bold mb-4">รายละเอียดการจอง</h2>
+    
+    <div class="space-y-4">
+      <p><strong>ห้อง:</strong> <%= @booking.room.name %></p>
+      <p><strong>ผู้จอง:</strong> <%= @booking.user.username %></p>
+      <p><strong>เริ่มต้น:</strong> <%= @booking.start_time.strftime("%d/%m/%Y %H:%M") %></p>
+      <p><strong>สิ้นสุด:</strong> <%= @booking.end_time.strftime("%d/%m/%Y %H:%M") %></p>
+      <p><strong>สถานะ:</strong> 
+        <% if @booking.complete %>
+          <span class="text-green-500">ยืนยันการจองแล้ว</span>
+        <% else %>
+          <span class="text-yellow-500">รอยืนยันการจอง</span>
+        <% end %>
+      </p>
+    </div>
 
-<div>
-  <%= link_to "Edit this booking", edit_booking_path(@booking) %> |
-  <%= link_to "Back to bookings", bookings_path %>
-
-  <%= button_to "Destroy this booking", @booking, method: :delete %>
+    <div class="mt-6 flex space-x-4">
+      <% if !@booking.complete %>
+        <%= button_to "ยกเลิกการจอง", cancel_booking_path(@booking), method: :patch, class: "bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition" %>
+      <% end %>
+      
+      <%= link_to "แก้ไขการจอง", edit_booking_path(@booking), class: "bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition" %>
+      <%= link_to "กลับไปรายการจอง", bookings_path, class: "bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition" %>
+    </div>
+  </div>
 </div>

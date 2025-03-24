@@ -2,13 +2,10 @@ class CheckIn < ApplicationRecord
   belongs_to :user
   belongs_to :booking
 
-  validate :valid_confirmation_code
+  validates :check_in, presence: true
 
-  private
-
-  def valid_confirmation_code
-    unless booking.confirmation_code == confirmation_code
-      errors.add(:confirmation_code, "รหัสยืนยันไม่ถูกต้อง")
-    end
+  def check_in_expired?
+    # เช็คว่าเกินเวลาที่จองหรือยัง
+    Time.now > booking.end_time
   end
 end

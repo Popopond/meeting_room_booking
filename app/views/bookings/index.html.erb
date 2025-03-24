@@ -8,12 +8,16 @@
   <% if @bookings.any? %>
     <% @bookings.each do |booking| %>
       <div class="p-4 border rounded-lg shadow-md flex justify-between items-center">
-        <p>Booking for <%= booking.room.name %> by <%= booking.user.username %></p>
+        <div class="flex items-center space-x-4">
+          <%= link_to booking_path(booking), class: "hover:text-blue-600" do %>
+            <p>Booking for <%= booking.room.name %> by <%= booking.user.username %></p>
+          <% end %>
+        </div>
 
-        <% if booking.status != "canceled" %>
+        <% if !booking.complete %>
           <%= button_to "ยกเลิกการจอง", cancel_booking_path(booking), method: :patch, class: "bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition" %>
         <% else %>
-          <span class="text-gray-500">ถูกยกเลิกแล้ว</span>
+          <span class="text-green-500">ยืนยันการจองแล้ว</span>
         <% end %>
       </div>
     <% end %>

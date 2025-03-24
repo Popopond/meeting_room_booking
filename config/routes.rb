@@ -5,7 +5,11 @@ Rails.application.routes.draw do
   root "home#index" 
 
   resources :check_ins
-  resources :bookings
+  resources :bookings do
+    member do
+      patch 'cancel'
+    end
+  end
   resources :statuses
   resources :rooms
   resources :users
