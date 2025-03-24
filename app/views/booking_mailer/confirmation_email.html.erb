@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #2c3e50; text-align: center;">ยืนยันการจองห้องประชุม</h2>
+      
+      <p>เรียน คุณ<%= @user.username %></p>
+      
+      <p>การจองห้องประชุมของคุณได้รับการยืนยันแล้ว:</p>
+      
+      <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <ul style="list-style: none; padding: 0;">
+          <li style="margin-bottom: 10px;"><strong>ห้อง:</strong> <%= @room.name %></li>
+          <li style="margin-bottom: 10px;"><strong>วันที่:</strong> <%= @booking.start_time.strftime("%d/%m/%Y") %></li>
+          <li style="margin-bottom: 10px;"><strong>เวลา:</strong> <%= @booking.start_time.strftime("%H:%M") %> - <%= @booking.end_time.strftime("%H:%M") %></li>
+        </ul>
+      </div>
+
+      <div style="background-color: #e8f4f8; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center;">
+        <p style="margin: 0;"><strong>รหัสยืนยันของคุณ:</strong></p>
+        <h1 style="color: #2c3e50; font-size: 32px; letter-spacing: 5px; margin: 10px 0;"><%= @booking.confirmation_code %></h1>
+      </div>
+      
+      <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;"><strong>คำแนะนำในการเช็คอิน:</strong></p>
+        <ol style="margin: 10px 0; padding-left: 20px;">
+          <li>นำรหัสยืนยันไปแสดงที่หน้าห้องประชุม</li>
+          <li>กรอกรหัสยืนยันในระบบเพื่อเข้าสู่ห้อง</li>
+          <li>กรุณาเช็คอินภายใน 15 นาทีแรกของช่วงเวลาที่จอง</li>
+          <li>หากไม่เช็คอินภายในเวลาที่กำหนด การจองจะถูกยกเลิกโดยอัตโนมัติ</li>
+        </ol>
+      </div>
+      
+      <p style="color: #666; font-size: 14px;">หากมีข้อสงสัย กรุณาติดต่อผู้ดูแลระบบ</p>
+      
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+      
+      <p style="text-align: center; color: #666; font-size: 12px;">ขอบคุณที่ใช้บริการจองห้องประชุมของเรา</p>
+    </div>
+  </body>
+</html> 

@@ -5,6 +5,7 @@ class Booking < ApplicationRecord
 
   before_create :generate_confirmation_code
   after_create :schedule_check_in_reminder
+  after_create :send_confirmation_email
 
   validates :start_time, :end_time, presence: true
   validate :end_time_after_start_time
@@ -42,5 +43,9 @@ class Booking < ApplicationRecord
 
   def schedule_check_in_reminder
     # ตั้งเวลาเตือนเช็คอินที่นี่
+  end
+
+  def send_confirmation_email
+    BookingMailer.with(booking: self).confirmation_email.deliver_later
   end
 end
