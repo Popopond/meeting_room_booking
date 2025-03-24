@@ -1,7 +1,8 @@
 <nav class="bg-blue-600 shadow-lg">
   <div class="container mx-auto flex justify-between items-center p-4">
-    <a href="<%= root_path %>" class="text-3xl font-extrabold text-white hover:text-gray-200 transition duration-300 ease-in-out">
-      OddSync
+    <a href="<%= root_path %>" class="flex items-center space-x-2 text-3xl font-extrabold text-white hover:text-gray-200 transition duration-300 ease-in-out">
+      <%= render 'icon/logo' ,class: " w-52 h-52 " %> 
+      <span>Sync</span>
     </a>
 
     <div class="flex space-x-8 items-center">
