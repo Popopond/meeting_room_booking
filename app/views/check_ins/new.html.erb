@@ -4,6 +4,18 @@
   <div class="relative py-3 sm:max-w-xl sm:mx-auto">
     <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
       <div class="max-w-md mx-auto">
+        <% if flash[:alert] %>
+          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+            <%= flash[:alert] %>
+          </div>
+        <% end %>
+
+        <% if flash[:notice] %>
+          <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
+            <%= flash[:notice] %>
+          </div>
+        <% end %>
+
         <div class="divide-y divide-gray-200">
           <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
             <h2 class="text-2xl font-bold mb-8 text-center">เช็คอินเข้าห้องประชุม</h2>

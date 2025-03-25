@@ -28,20 +28,28 @@ class Booking < ApplicationRecord
   def can_check_in?
     return false if complete
     return false if check_in.present?
+    
     current_time = Time.zone.now
-    current_time.between?(start_time, start_time + 15.minutes)
+    booking_start = start_time.in_time_zone
+    check_in_deadline = booking_start + 15.minutes
+    
+    current_time.between?(booking_start, check_in_deadline)
   end
 
   def perform_check_in(current_user)
     return false unless can_check_in?
 
     transaction do
-      create_check_in!(user: current_user, check_in: Time.zone.now)
-      update!(complete: true)
+      check_in = build_check_in(user: current_user)
+      if check_in.save
+        update!(complete: true)
+        true
+      else
+        errors.add(:base, check_in.errors.full_messages.join(", "))
+        raise ActiveRecord::Rollback
+        false
+      end
     end
-    true
-  rescue ActiveRecord::RecordInvalid
-    false
   end
 
   private
