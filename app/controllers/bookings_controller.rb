@@ -1,8 +1,9 @@
 class BookingsController < ApplicationController
   before_action :set_booking, only: %i[show edit update destroy check_in cancel]
+  before_action :authenticate_user!
 
   def index
-    @bookings = Booking.includes(:room, :user).where("start_time >= ?", Time.now)
+    @bookings = current_user.bookings.includes(:room).order(start_time: :desc)
   
     if @bookings.empty?
       flash[:notice] = "ยังไม่มีการจองห้องประชุม"
@@ -15,31 +16,38 @@ class BookingsController < ApplicationController
   end
 
   def new
-    @booking = Booking.new
+    @booking = current_user.bookings.build
+    @rooms = Room.all
   end
 
   def edit
   end
 
   def create
-    @booking = current_user.bookings.new(booking_params)
-    @booking.complete = false
+    @booking = current_user.bookings.build(booking_params)
+
+    respond_to do |format|
+      if @booking.save
+        # ✅ แก้ให้ดึงค่า Status ด้วย `status_name`
+        unavailable_status = Status.find_by(status_name: "Unavailable") 
+        @booking.room.update(status_id: unavailable_status&.id)
   
-    if @booking.save
-      # ✅ แก้ให้ดึงค่า Status ด้วย `status_name`
-      unavailable_status = Status.find_by(status_name: "Unavailable") 
-      @booking.room.update(status_id: unavailable_status&.id)
-  
-      # ✅ ตรวจสอบว่า Job ทำงานถูกต้องหรือไม่
-      if @booking.room.status_id == unavailable_status&.id
-        ReleaseRoomJob.set(wait_until: @booking.end_time).perform_later(@booking.id)
-        redirect_to bookings_path, notice: "Booking created successfully."
+        # ✅ ตรวจสอบว่า Job ทำงานถูกต้องหรือไม่
+        if @booking.room.status_id == unavailable_status&.id
+          ReleaseRoomJob.set(wait_until: @booking.end_time).perform_later(@booking.id)
+          format.html { redirect_to booking_url(@booking), notice: "การจองสำเร็จ! รหัสยืนยันของคุณคือ: #{@booking.confirmation_code}" }
+          format.json { render :show, status: :created, location: @booking }
+        else
+          flash[:alert] = "เกิดข้อผิดพลาดในการอัปเดตสถานะห้อง"
+          @rooms = Room.all
+          format.html { render :new, status: :unprocessable_entity }
+          format.json { render json: @booking.errors, status: :unprocessable_entity }
+        end
       else
-        flash[:alert] = "เกิดข้อผิดพลาดในการอัปเดตสถานะห้อง"
-        redirect_to bookings_path
+        @rooms = Room.all
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @booking.errors, status: :unprocessable_entity }
       end
-    else
-      render :new, status: :unprocessable_entity
     end
   end
   
@@ -48,10 +56,14 @@ class BookingsController < ApplicationController
   
 
   def update
-    if @booking.update(booking_params)
-      render json: { message: "Booking was successfully updated.", booking: @booking }, status: :ok
-    else
-      render json: { errors: @booking.errors.full_messages }, status: :unprocessable_entity
+    respond_to do |format|
+      if @booking.update(booking_params)
+        format.html { redirect_to booking_url(@booking), notice: "Booking was successfully updated." }
+        format.json { render :show, status: :ok, location: @booking }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @booking.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -80,14 +92,19 @@ class BookingsController < ApplicationController
   def cancel
     @booking = current_user.bookings.find(params[:id])
     
+    if @booking.complete?
+      redirect_to bookings_url, alert: "ไม่สามารถยกเลิกการจองที่เช็คอินแล้วได้"
+      return
+    end
+    
     if @booking.destroy
       # อัพเดทสถานะห้องให้ว่าง
       available_status = Status.find_by(status_name: "Available")
       @booking.room.update(status_id: available_status&.id)
       
-      redirect_to bookings_path, notice: "ยกเลิกการจองสำเร็จ"
+      redirect_to bookings_url, notice: "ยกเลิกการจองเรียบร้อยแล้ว"
     else
-      redirect_to bookings_path, alert: "ไม่สามารถยกเลิกการจองได้"
+      redirect_to bookings_url, alert: "ไม่สามารถยกเลิกการจองได้"
     end
   end
 
@@ -99,7 +116,7 @@ class BookingsController < ApplicationController
       return
     end
   
-    @booking = Booking.find(params[:id])
+    @booking = current_user.bookings.find(params[:id])
   end
   
 

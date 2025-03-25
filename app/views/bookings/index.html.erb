@@ -2,26 +2,57 @@
 
 <% content_for :title, "Bookings" %>
 
-<h1>Bookings</h1>
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold">การจองของฉัน</h1>
+    <%= link_to "จองห้องประชุม", new_booking_path, class: "bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300" %>
+  </div>
 
-<div id="bookings">
-  <% if @bookings.any? %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <% @bookings.each do |booking| %>
-      <div class="p-4 border rounded-lg shadow-md flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-          <%= link_to booking_path(booking), class: "hover:text-blue-600" do %>
-            <p>Booking for <%= booking.room.name %> by <%= booking.user.username %></p>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h2 class="text-xl font-semibold"><%= booking.room.name %></h2>
+            <p class="text-gray-600">วันที่: <%= booking.start_time.strftime("%d/%m/%Y") %></p>
+            <p class="text-gray-600">เวลา: <%= booking.start_time.strftime("%H:%M") %> - <%= booking.end_time.strftime("%H:%M") %></p>
+          </div>
+
+          <% if booking.check_in.present? %>
+            <span class="text-green-500"><%= booking.status %></span>
+          <% elsif booking.check_in_expired? %>
+            <span class="text-red-500"><%= booking.status %></span>
+          <% else %>
+            <span class="text-yellow-500"><%= booking.status %></span>
           <% end %>
         </div>
 
-        <% if booking.complete %>
-          <span class="text-green-500">ยืนยันการจองแล้ว</span>
-        <% end %>
+        <div class="border-t pt-4">
+          <div class="flex justify-between items-center">
+            <div class="text-sm">
+              <p class="font-semibold">รหัสยืนยัน:</p>
+              <p class="font-mono"><%= booking.confirmation_code %></p>
+            </div>
+
+            <div class="flex space-x-2">
+              <%= link_to "ดูรายละเอียด", booking_path(booking), class: "text-blue-500 hover:text-blue-700" %>
+              <% unless booking.complete? %>
+                <%= button_to "ยกเลิกการจอง", 
+                    cancel_booking_path(booking), 
+                    method: :delete,
+                    form: { data: { turbo_confirm: "คุณแน่ใจหรือไม่ที่จะยกเลิกการจองนี้?" } },
+                    class: "text-red-500 hover:text-red-700 bg-transparent border-none cursor-pointer" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
     <% end %>
-  <% else %>
-    <p class="text-gray-500">ยังไม่มีการจองห้องประชุม</p>
+  </div>
+
+  <% if @bookings.empty? %>
+    <div class="text-center py-8">
+      <p class="text-gray-500">ยังไม่มีการจองห้องประชุม</p>
+    </div>
   <% end %>
 </div>
-
-<%= link_to "New booking", new_booking_path, class: "mt-4 inline-block bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition" %>

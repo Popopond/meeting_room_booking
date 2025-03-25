@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   resources :check_ins
   resources :bookings do
     member do
-      patch 'cancel'
+      delete :cancel
     end
   end
   resources :statuses
