@@ -1,0 +1,67 @@
+<div class="border-t pt-6">
+  <h2 class="text-xl font-semibold mb-4">ผู้เข้าร่วมประชุม</h2>
+  
+  <div class="mb-4">
+    <h3 class="font-medium mb-2">ผู้จอง</h3>
+    <div class="flex items-center space-x-2">
+      <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+        <% if @booking.user.avatar.present? %>
+          <%= image_tag @booking.user.avatar, class: "w-full h-full rounded-full object-cover" %>
+        <% else %>
+          <span class="text-gray-500 text-sm"><%= @booking.user.username.first.upcase %></span>
+        <% end %>
+      </div>
+      <span class="font-medium"><%= @booking.user.username %></span>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <h3 class="font-medium mb-2">ผู้เข้าร่วม</h3>
+    <% if @booking.participants.any? %>
+      <ul class="space-y-2">
+        <% @booking.participants.each do |participant| %>
+          <li class="flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                <% if participant.avatar.present? %>
+                  <%= image_tag participant.avatar, class: "w-full h-full rounded-full object-cover" %>
+                <% else %>
+                  <span class="text-gray-500 text-sm"><%= participant.username.first.upcase %></span>
+                <% end %>
+              </div>
+              <span class="font-medium"><%= participant.username %></span>
+            </div>
+            <% if @booking.user == current_user %>
+              <%= button_to "ลบ", remove_participant_booking_path(@booking, user_id: participant.id), 
+                  method: :delete, 
+                  class: "text-red-500 hover:text-red-700 text-sm",
+                  data: { confirm: "คุณแน่ใจหรือไม่ที่จะลบผู้เข้าร่วมคนนี้?" } %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-500">ยังไม่มีผู้เข้าร่วม</p>
+    <% end %>
+  </div>
+
+  <% if @booking.user == current_user %>
+    <div class="mt-4">
+      <h3 class="font-medium mb-2">เพิ่มผู้เข้าร่วม</h3>
+      <%= form_with(model: @booking, url: add_participant_booking_path(@booking), method: :post, class: "flex gap-2") do |f| %>
+        <div class="relative flex-1">
+          <%= select_tag :user_id, 
+              options_from_collection_for_select(
+                @available_users,
+                :id,
+                :username,
+                prompt: "เลือกผู้เข้าร่วม"
+              ),
+              class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50",
+              data: { controller: "select" } %>
+        </div>
+        <%= f.submit "เพิ่ม", class: "bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" %>
+      <% end %>
+    </div>
+  <% end %>
+</div> 

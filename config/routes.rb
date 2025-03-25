@@ -1,13 +1,14 @@
 Rails.application.routes.draw do
-  get "home/index"
   devise_for :users
 
-  root "home#index" 
+  root "home#index"
 
   resources :check_ins
   resources :bookings do
     member do
       delete :cancel
+      post :add_participant
+      delete :remove_participant
     end
   end
   resources :statuses

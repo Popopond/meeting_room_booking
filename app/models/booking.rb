@@ -2,6 +2,8 @@ class Booking < ApplicationRecord
   belongs_to :user
   belongs_to :room
   has_one :check_in, dependent: :destroy
+  has_many :meeting_participants, dependent: :destroy
+  has_many :participants, through: :meeting_participants, source: :user
 
   validates :start_time, :end_time, presence: true
   validate :end_time_after_start_time
@@ -9,6 +11,23 @@ class Booking < ApplicationRecord
 
   before_create :generate_confirmation_code
   after_create :send_confirmation_email
+
+  scope :upcoming, -> { where('start_time > ?', Time.current).order(start_time: :asc) }
+  scope :past, -> { where('end_time < ?', Time.current).order(start_time: :desc) }
+  scope :current, -> { where('start_time <= ? AND end_time > ?', Time.current, Time.current) }
+
+  def add_participant(user)
+    return false if user == self.user
+    meeting_participants.create(user: user)
+  end
+
+  def remove_participant(user)
+    meeting_participants.find_by(user: user)&.destroy
+  end
+
+  def participant?(user)
+    participants.include?(user)
+  end
 
   def status
     if complete
@@ -26,8 +45,7 @@ class Booking < ApplicationRecord
   end
 
   def can_check_in?
-    return false if complete
-    return false if check_in.present?
+    return false if complete || check_in.present?
     
     current_time = Time.zone.now
     booking_start = start_time.in_time_zone
@@ -63,9 +81,7 @@ class Booking < ApplicationRecord
 
   def end_time_after_start_time
     return if end_time.blank? || start_time.blank?
-    if end_time <= start_time
-      errors.add(:end_time, "ต้องมากกว่าเวลาที่เริ่มจอง")
-    end
+    errors.add(:end_time, "ต้องมากกว่าเวลาที่เริ่มจอง") if end_time <= start_time
   end
 
   def room_availability
@@ -76,9 +92,7 @@ class Booking < ApplicationRecord
       end_time, start_time, end_time, start_time
     )
 
-    if overlapping_bookings.exists?
-      errors.add(:room, "ห้องนี้ถูกจองในช่วงเวลานี้แล้ว")
-    end
+    errors.add(:room, "ห้องนี้ถูกจองในช่วงเวลานี้แล้ว") if overlapping_bookings.exists?
   end
 
   def send_confirmation_email

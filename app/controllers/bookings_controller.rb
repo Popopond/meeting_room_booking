@@ -1,18 +1,17 @@
 class BookingsController < ApplicationController
-  before_action :set_booking, only: %i[show edit update destroy check_in cancel]
+  before_action :set_booking, only: %i[show edit update destroy check_in cancel add_participant remove_participant]
   before_action :authenticate_user!
 
   def index
     @bookings = current_user.bookings.includes(:room).order(start_time: :desc)
-  
-    if @bookings.empty?
-      flash[:notice] = "ยังไม่มีการจองห้องประชุม"
-    end
+    flash.now[:notice] = "ยังไม่มีการจองห้องประชุม" if @bookings.empty?
   end
-  
 
   def show
     @booking = Booking.find(params[:id])
+    @available_users = User.exclude_user(@booking.user)
+                          .where.not(id: @booking.participants.pluck(:id))
+                          .select(:id, :username, :avatar)
   end
 
   def new
@@ -28,21 +27,9 @@ class BookingsController < ApplicationController
 
     respond_to do |format|
       if @booking.save
-        # ✅ แก้ให้ดึงค่า Status ด้วย `status_name`
-        unavailable_status = Status.find_by(status_name: "Unavailable") 
-        @booking.room.update(status_id: unavailable_status&.id)
-  
-        # ✅ ตรวจสอบว่า Job ทำงานถูกต้องหรือไม่
-        if @booking.room.status_id == unavailable_status&.id
-          ReleaseRoomJob.set(wait_until: @booking.end_time).perform_later(@booking.id)
-          format.html { redirect_to booking_url(@booking), notice: "การจองสำเร็จ! รหัสยืนยันของคุณคือ: #{@booking.confirmation_code}" }
-          format.json { render :show, status: :created, location: @booking }
-        else
-          flash[:alert] = "เกิดข้อผิดพลาดในการอัปเดตสถานะห้อง"
-          @rooms = Room.all
-          format.html { render :new, status: :unprocessable_entity }
-          format.json { render json: @booking.errors, status: :unprocessable_entity }
-        end
+        update_room_status
+        format.html { redirect_to booking_url(@booking), notice: success_message }
+        format.json { render :show, status: :created, location: @booking }
       else
         @rooms = Room.all
         format.html { render :new, status: :unprocessable_entity }
@@ -50,15 +37,11 @@ class BookingsController < ApplicationController
       end
     end
   end
-  
-  
-  
-  
 
   def update
     respond_to do |format|
       if @booking.update(booking_params)
-        format.html { redirect_to booking_url(@booking), notice: "Booking was successfully updated." }
+        format.html { redirect_to booking_url(@booking), notice: "อัพเดทการจองเรียบร้อยแล้ว" }
         format.json { render :show, status: :ok, location: @booking }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -79,10 +62,7 @@ class BookingsController < ApplicationController
 
   def check_in
     if @booking.check_in_expired?
-      # หากเช็คอินหมดเวลาให้ห้องกลับเป็น available
-      @booking.room.update(available: true)
-      @booking.destroy
-      render json: { message: "การเช็คอินเกินเวลา ห้องถูกยกเลิก" }, status: :ok
+      handle_check_in_expired
     else
       @booking.check_in
       render json: { message: "เช็คอินสำเร็จ!" }, status: :ok
@@ -98,13 +78,30 @@ class BookingsController < ApplicationController
     end
     
     if @booking.destroy
-      # อัพเดทสถานะห้องให้ว่าง
-      available_status = Status.find_by(status_name: "Available")
-      @booking.room.update(status_id: available_status&.id)
-      
+      update_room_status_to_available
       redirect_to bookings_url, notice: "ยกเลิกการจองเรียบร้อยแล้ว"
     else
       redirect_to bookings_url, alert: "ไม่สามารถยกเลิกการจองได้"
+    end
+  end
+
+  def add_participant
+    user = User.find(params[:user_id])
+    
+    if @booking.add_participant(user)
+      redirect_to @booking, notice: "เพิ่มผู้เข้าร่วมประชุมเรียบร้อยแล้ว"
+    else
+      redirect_to @booking, alert: "ไม่สามารถเพิ่มผู้เข้าร่วมประชุมได้"
+    end
+  end
+
+  def remove_participant
+    user = User.find(params[:user_id])
+    
+    if @booking.remove_participant(user)
+      redirect_to @booking, notice: "ลบผู้เข้าร่วมประชุมเรียบร้อยแล้ว"
+    else
+      redirect_to @booking, alert: "ไม่สามารถลบผู้เข้าร่วมประชุมได้"
     end
   end
 
@@ -118,9 +115,36 @@ class BookingsController < ApplicationController
   
     @booking = current_user.bookings.find(params[:id])
   end
-  
 
   def booking_params
     params.require(:booking).permit(:room_id, :start_time, :end_time)
+  end
+
+  def update_room_status
+    if Time.current >= @booking.start_time
+      unavailable_status = Status.find_by(status_name: "Unavailable") 
+      @booking.room.update(status_id: unavailable_status&.id)
+      
+      if @booking.room.status_id == unavailable_status&.id
+        ReleaseRoomJob.set(wait_until: @booking.end_time).perform_later(@booking.id)
+      else
+        flash[:alert] = "เกิดข้อผิดพลาดในการอัปเดตสถานะห้อง"
+      end
+    end
+  end
+
+  def update_room_status_to_available
+    available_status = Status.find_by(status_name: "Available")
+    @booking.room.update(status_id: available_status&.id)
+  end
+
+  def handle_check_in_expired
+    @booking.room.update(available: true)
+    @booking.destroy
+    render json: { message: "การเช็คอินเกินเวลา ห้องถูกยกเลิก" }, status: :ok
+  end
+
+  def success_message
+    "การจองสำเร็จ! รหัสยืนยันของคุณคือ: #{@booking.confirmation_code}"
   end
 end
