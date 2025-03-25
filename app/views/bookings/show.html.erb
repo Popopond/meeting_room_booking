@@ -20,7 +20,7 @@
 
     <div class="mt-6 flex space-x-4">
       <% if !@booking.complete %>
-        <%= button_to "ยกเลิกการจอง", cancel_booking_path(@booking), method: :patch, class: "bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition" %>
+        <%= button_to "ยกเลิกการจอง", cancel_booking_path(@booking), method: :delete, class: "bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition", form: { data: { turbo_confirm: "คุณแน่ใจหรือไม่ที่จะยกเลิกการจองนี้?" } } %>
       <% end %>
       
       <%= link_to "แก้ไขการจอง", edit_booking_path(@booking), class: "bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition" %>

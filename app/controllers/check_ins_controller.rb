@@ -1,73 +1,59 @@
 class CheckInsController < ApplicationController
-  before_action :set_check_in, only: %i[ show edit update destroy ]
   before_action :authenticate_user!
-  # GET /check_ins or /check_ins.json
-  def index
-    @check_ins = CheckIn.all
-  end
 
-  # GET /check_ins/1 or /check_ins/1.json
-  def show
-  end
-
-  # GET /check_ins/new
   def new
-    @check_in = CheckIn.new
+    @booking = Booking.find_by(confirmation_code: params[:code]) if params[:code]
   end
 
-  # GET /check_ins/1/edit
-  def edit
-  end
-
-  # POST /check_ins or /check_ins.json
   def create
-    booking = Booking.find_by(id: params[:booking_id], user: current_user)
-  
-    if booking && booking.confirmation_code == params[:confirmation_code]
-      @check_in = CheckIn.new(user: current_user, booking: booking, check_in: Time.now)
-  
-      if @check_in.save
-        render json: { message: "Check-in สำเร็จ!" }, status: :ok
-      else
-        render json: { errors: @check_in.errors.full_messages }, status: :unprocessable_entity
-      end
+    @booking = Booking.find_by(confirmation_code: params[:confirmation_code])
+    
+    if @booking.nil?
+      flash[:alert] = "ไม่พบรหัสยืนยันนี้ในระบบ"
+      redirect_to new_check_in_path
+      return
+    end
+
+    if @booking.check_in_expired?
+      flash[:alert] = "หมดเวลาเช็คอินแล้ว (เช็คอินได้ภายใน 15 นาทีแรกของการจองเท่านั้น)"
+      redirect_to new_check_in_path
+      return
+    end
+
+    if @booking.complete?
+      flash[:alert] = "การจองนี้ถูกยืนยันไปแล้ว"
+      redirect_to new_check_in_path
+      return
+    end
+
+    if @booking.check_in.present?
+      flash[:alert] = "คุณได้เช็คอินเรียบร้อยแล้ว"
+      redirect_to new_check_in_path
+      return
+    end
+
+    unless @booking.can_check_in?
+      flash[:alert] = "ไม่สามารถเช็คอินได้ในขณะนี้ (เช็คอินได้ตั้งแต่ #{@booking.start_time.strftime("%H:%M")} ถึง #{(@booking.start_time + 15.minutes).strftime("%H:%M")} เท่านั้น)"
+      redirect_to new_check_in_path
+      return
+    end
+
+    if @booking.perform_check_in(current_user)
+      flash[:notice] = "เช็คอินสำเร็จ! คุณสามารถเข้าห้องประชุมได้แล้ว"
+      redirect_to new_check_in_path(code: @booking.confirmation_code)
     else
-      render json: { errors: "รหัสยืนยันไม่ถูกต้อง หรือไม่มีข้อมูลการจอง" }, status: :unprocessable_entity
+      flash[:alert] = "เกิดข้อผิดพลาดในการเช็คอิน กรุณาลองใหม่อีกครั้ง"
+      redirect_to new_check_in_path
     end
-  end
-  
-
-  # PATCH/PUT /check_ins/1 or /check_ins/1.json
-  def update
-    respond_to do |format|
-      if @check_in.update(check_in_params)
-        format.html { redirect_to @check_in, notice: "Check in was successfully updated." }
-        format.json { render :show, status: :ok, location: @check_in }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @check_in.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /check_ins/1 or /check_ins/1.json
-  def destroy
-    @check_in.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to check_ins_path, status: :see_other, notice: "Check in was successfully destroyed." }
-      format.json { head :no_content }
-    end
+  rescue => e
+    flash[:alert] = "เกิดข้อผิดพลาดในการเช็คอิน: #{e.message}"
+    redirect_to new_check_in_path
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_check_in
-      @check_in = CheckIn.find(params[:id])
-    end    
 
-    # Only allow a list of trusted parameters through.
-    def check_in_params
-      params.require(:check_in).permit(:booking_id, :confirmation_code)
-    end
+  def within_check_in_period?(booking)
+    check_in_deadline = booking.start_time + 15.minutes
+    Time.current.between?(booking.start_time, check_in_deadline)
+  end
 end
