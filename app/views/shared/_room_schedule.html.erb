@@ -1,38 +1,65 @@
 <% rooms = Room.all %>
 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
   <table class="w-full">
-    <!-- Header -->
+    <!-- Header with time slots -->
     <tr class="border-b border-gray-200">
-      <th class="p-4"></th>
-      <% rooms.each do |room| %>
-        <th class="px-6 py-4 text-left"><%= room.name %></th>
+      <th class="p-4 w-32"></th>
+      <% (8..18).each do |hour| %>
+        <% ["00", "30"].each do |minute| %>
+          <% next if hour == 18 && minute == "30" %>
+          <th class="px-2 py-4 text-center text-sm">
+            <%= "#{hour}.#{minute}" %><br>-<br><%= "#{hour}.#{(minute.to_i + 30) % 60}" %>
+          </th>
+        <% end %>
       <% end %>
     </tr>
 
-    <!-- Time Slots -->
-    <% (8..18).each do |hour| %>
-      <% ["00", "30"].each do |minute| %>
-        <tr class="border-b border-gray-200">
-          <td class="p-3 px-6"><%= "#{hour}.#{minute} น." %></td>
-          
-          <% rooms.each do |room| %>
-            <td class="p-3 px-6">
-              <% current_time = Time.current.change(hour: hour, min: minute.to_i) %>
-              <% booking = room.bookings.where("start_time <= ? AND end_time > ?", current_time, current_time).first %>
-              
-              <% if booking %>
-                <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-                  <span class="text-[#4475FF] font-medium">Unavailable</span>
-                </div>
-              <% else %>
-                <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-                  <span class="text-[#0BA811] font-medium">Available</span>
-                </div>
+    <!-- Rooms -->
+    <% rooms.each do |room| %>
+      <tr class="border-b border-gray-200">
+        <td class="p-3 px-6 font-medium"><%= room.name %></td>
+        
+        <% current_status = nil %>
+        <% colspan = 0 %>
+        <% cell_content = nil %>
+        
+        <% (8..18).each do |hour| %>
+          <% ["00", "30"].each do |minute| %>
+            <% next if hour == 18 && minute == "30" %>
+            <% current_time = Time.current.change(hour: hour, min: minute.to_i) %>
+            <% booking = room.bookings.where("start_time <= ? AND end_time > ?", current_time, current_time).first %>
+            <% status = booking ? 'unavailable' : 'available' %>
+            
+            <% if status != current_status %>
+              <% if current_status %>
+                <td colspan="<%= colspan %>" class="p-2">
+                  <%= cell_content %>
+                </td>
               <% end %>
-            </td>
+              
+              <% current_status = status %>
+              <% colspan = 1 %>
+              <% if status == 'unavailable' %>
+                <% cell_content = content_tag(:div, class: "rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4 text-center") do %>
+                  <span class="text-[#4475FF] font-medium">Unavailable</span>
+                <% end %>
+              <% else %>
+                <% cell_content = content_tag(:div, class: "rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4 text-center") do %>
+                  <span class="text-[#0BA811] font-medium">Available</span>
+                <% end %>
+              <% end %>
+            <% else %>
+              <% colspan += 1 %>
+            <% end %>
           <% end %>
-        </tr>
-      <% end %>
+        <% end %>
+        
+        <% if current_status %>
+          <td colspan="<%= colspan %>" class="p-2">
+            <%= cell_content %>
+          </td>
+        <% end %>
+      </tr>
     <% end %>
   </table>
 </div>
