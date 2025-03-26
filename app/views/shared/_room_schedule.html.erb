@@ -1,123 +1,50 @@
+<% rooms = Room.order(:id) %>
 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
-  <div class="grid grid-cols-[120px_repeat(5,1fr)] divide-x divide-gray-200">
+  <div class="grid grid-cols-[120px_repeat(<%= rooms.count %>,1fr)] divide-x divide-gray-200">
     <!-- Header -->
     <div class="time-cell"></div>
-    <div class="room-header px-6">Room A</div>
-    <div class="room-header px-6">Room B</div>
-    <div class="room-header px-6">Room C</div>
-    <div class="room-header px-6">Room D</div>
-    <div class="room-header px-6">Room E</div>
+    <% rooms.each do |room| %>
+      <div class="room-header px-6"><%= room.name %></div>
+    <% end %>
 
     <!-- 8:00 -->
     <div class="time-cell p-3 px-6 flex items-center">8.00 น.</div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
+    <% rooms.each do |room| %>
+      <div class="p-3 px-6">
+        <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
+          <span class="text-[#0BA811] font-medium">Available</span>
+        </div>
       </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
+    <% end %>
 
     <!-- 8:30 -->
     <div class="time-cell p-3 px-6 flex items-center">8.30 น.</div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-        <span class="text-[#4475FF] font-medium">Unavailable</span>
+    <% rooms.each do |room| %>
+      <div class="p-3 px-6">
+        <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
+          <span class="text-[#4475FF] font-medium">Unavailable</span>
+        </div>
       </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#FF4747]/30 bg-[#FFF2F2] p-4">
-        <span class="text-[#FF4747] font-medium">Maintenance</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-        <span class="text-[#4475FF] font-medium">Unavailable</span>
-      </div>
-    </div>
+    <% end %>
 
     <!-- 9:00 -->
     <div class="time-cell p-3 px-6 flex items-center">9.00 น.</div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-        <span class="text-[#4475FF] font-medium">Unavailable</span>
+    <% rooms.each do |room| %>
+      <div class="p-3 px-6">
+        <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
+          <span class="text-[#4475FF] font-medium">Unavailable</span>
+        </div>
       </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#FF4747]/30 bg-[#FFF2F2] p-4">
-        <span class="text-[#FF4747] font-medium">Maintenance</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-        <span class="text-[#4475FF] font-medium">Unavailable</span>
-      </div>
-    </div>
+    <% end %>
 
     <!-- 9:30 -->
     <div class="time-cell p-3 px-6 flex items-center">9.30 น.</div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-        <span class="text-[#4475FF] font-medium">Unavailable</span>
+    <% rooms.each do |room| %>
+      <div class="p-3 px-6">
+        <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
+          <span class="text-[#4475FF] font-medium">Unavailable</span>
+        </div>
       </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#FF4747]/30 bg-[#FFF2F2] p-4">
-        <span class="text-[#FF4747] font-medium">Maintenance</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-        <span class="text-[#0BA811] font-medium">Available</span>
-      </div>
-    </div>
-    <div class="p-3 px-6">
-      <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-        <span class="text-[#4475FF] font-medium">Unavailable</span>
-      </div>
-    </div>
+    <% end %>
   </div>
 </div>
