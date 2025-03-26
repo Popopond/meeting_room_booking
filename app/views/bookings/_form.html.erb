@@ -30,15 +30,22 @@
     <h3 class="text-lg font-semibold text-gray-800 mb-4">เลือกห้องประชุม</h3>
     <div class="grid grid-cols-1 gap-4">
       <% Room.all.each do |room| %>
-        <label class="relative flex items-center p-4 bg-white border-2 rounded-lg cursor-pointer hover:border-blue-500 transition-colors duration-200">
-          <%= form.radio_button :room_id, room.id, class: "sr-only peer" %>
+        <label class="relative flex items-center p-4 bg-white border-2 rounded-lg cursor-pointer hover:border-blue-500 transition-colors duration-200 peer-checked:border-blue-500 peer-checked:bg-blue-50">
+          <%= form.radio_button :room_id, room.id, class: "sr-only peer", checked: booking.room_id == room.id %>
           <div class="w-full">
             <div class="flex items-center justify-between mb-2">
-              <span class="text-lg font-semibold text-gray-800"><%= room.name %></span>
+              <div class="flex items-center gap-3">
+                <div class="relative w-5 h-5">
+                  <div class="absolute inset-0 w-5 h-5 border-2 rounded-full peer-checked:border-blue-500 transition-colors duration-200"></div>
+                  <div class="absolute inset-0 m-1.5 w-2 h-2 rounded-full bg-blue-500 opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></div>
+                </div>
+                <span class="text-lg font-semibold text-gray-800"><%= room.name %></span>
+              </div>
               <span class="px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">จุ <%= room.capacity %> คน</span>
             </div>
             <p class="text-sm text-gray-600"><%= room.description %></p>
           </div>
+          <div class="absolute inset-0 border-2 border-blue-500 rounded-lg opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200"></div>
         </label>
       <% end %>
     </div>
@@ -53,6 +60,7 @@
         <%= form.label :date, "วันที่", class: "block text-sm font-medium text-gray-700 mb-2" %>
         <%= form.date_field :date, 
             min: Date.current,
+            value: booking.start_time&.to_date,
             class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
       </div>
 
@@ -62,7 +70,7 @@
           <%= form.label :start_time, "เวลาเริ่มต้น", class: "block text-sm font-medium text-gray-700 mb-2" %>
           <%= form.select :start_time,
               time_options_for_select,
-              { prompt: "เลือกเวลา" },
+              { prompt: "เลือกเวลา", selected: booking.start_time&.strftime("%H:%M") },
               { class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
         </div>
 
@@ -70,7 +78,7 @@
           <%= form.label :end_time, "เวลาสิ้นสุด", class: "block text-sm font-medium text-gray-700 mb-2" %>
           <%= form.select :end_time,
               time_options_for_select,
-              { prompt: "เลือกเวลา" },
+              { prompt: "เลือกเวลา", selected: booking.end_time&.strftime("%H:%M") },
               { class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" } %>
         </div>
       </div>

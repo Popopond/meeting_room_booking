@@ -88,8 +88,8 @@ class Booking < ApplicationRecord
     return if room.blank? || start_time.blank? || end_time.blank?
 
     overlapping_bookings = room.bookings.where.not(id: id).where(
-      "(start_time <= ? AND end_time > ?) OR (start_time < ? AND end_time >= ?)",
-      end_time, start_time, end_time, start_time
+      "(start_time < ? AND end_time > ?)",
+      end_time, start_time
     )
 
     errors.add(:room, "ห้องนี้ถูกจองในช่วงเวลานี้แล้ว") if overlapping_bookings.exists?
