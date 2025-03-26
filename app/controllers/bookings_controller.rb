@@ -117,7 +117,18 @@ class BookingsController < ApplicationController
   end
 
   def booking_params
-    params.require(:booking).permit(:room_id, :start_time, :end_time)
+    date = params[:booking][:date]
+    start_time = params[:booking][:start_time]
+    end_time = params[:booking][:end_time]
+
+    # Combine date and time into datetime
+    start_datetime = Time.zone.parse("#{date} #{start_time}")
+    end_datetime = Time.zone.parse("#{date} #{end_time}")
+
+    params.require(:booking).permit(:room_id).merge(
+      start_time: start_datetime,
+      end_time: end_datetime
+    )
   end
 
   def update_room_status
