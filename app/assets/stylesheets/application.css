@@ -12,3 +12,33 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .room-cell {
+    @apply p-4 rounded-[14px] text-[15px] font-medium;
+  }
+
+  .room-cell-available {
+    @apply room-cell bg-available text-emerald-600;
+  }
+
+  .room-cell-maintenance {
+    @apply room-cell bg-maintenance;
+  }
+
+  .room-cell-booking {
+    @apply room-cell bg-booking;
+  }
+
+  .booking-title {
+    @apply text-[15px] font-medium text-[#3366FF];
+  }
+
+  .booking-person {
+    @apply text-[13px] text-[#3366FF]/70 mt-1;
+  }
+}
+
