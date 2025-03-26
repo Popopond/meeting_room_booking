@@ -15,11 +15,11 @@
       </svg>
       Week View
     </button>
-    <button class="h-10 px-4 rounded-[20px] bg-[#3366FF] text-white flex items-center gap-2">
+    <%= link_to new_booking_path, class: "h-10 px-4 rounded-[20px] bg-[#3366FF] text-white flex items-center gap-2" do %>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
         <path d="M7 1V13M1 7H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
       Add Event
-    </button>
+    <% end %>
   </div>
 </div> 
