@@ -1,53 +1,80 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static values = {
-    startDate: String
+  static targets = ["datePicker"]
+
+  connect() {
+    // ตั้งค่าวันเริ่มต้นเป็นวันนี้
+    this.datePickerTarget.value = new Date().toISOString().split('T')[0]
   }
 
-  select(event) {
-    // ลบ class active จากทุก date box
-    document.querySelectorAll('.date-box').forEach(box => {
-      box.classList.remove('bg-blue-100', 'border-blue-500')
-      box.classList.add('bg-white', 'border-gray-200')
-    })
-
-    // เพิ่ม class active ให้กับ date box ที่เลือก
-    event.currentTarget.classList.remove('bg-white', 'border-gray-200')
-    event.currentTarget.classList.add('bg-blue-100', 'border-blue-500')
+  openDatePicker() {
+    this.datePickerTarget.click()
   }
 
-  previousWeek(event) {
-    event.preventDefault()
-    const currentStartDate = new Date(this.element.dataset.startDate)
-    const newStartDate = new Date(currentStartDate)
-    newStartDate.setDate(currentStartDate.getDate() - 5)
-    
+  dateSelected(event) {
+    const selectedDate = event.target.value
     const url = new URL(window.location.href)
-    url.searchParams.set('start_date', newStartDate.toISOString().split('T')[0])
-    this.navigateToDate(url)
-  }
-
-  nextWeek(event) {
-    event.preventDefault()
-    const currentStartDate = new Date(this.element.dataset.startDate)
-    const newStartDate = new Date(currentStartDate)
-    newStartDate.setDate(currentStartDate.getDate() + 5)
+    url.searchParams.set('date', selectedDate)
     
-    const url = new URL(window.location.href)
-    url.searchParams.set('start_date', newStartDate.toISOString().split('T')[0])
-    this.navigateToDate(url)
-  }
+    // คำนวณ start_date จากวันที่เลือก
+    const date = new Date(selectedDate)
+    const day = date.getDay()
+    const diff = date.getDate() - day
+    const startDate = new Date(date.setDate(diff))
+    url.searchParams.set('start_date', startDate.toISOString().split('T')[0])
 
-  navigateToDate(url) {
+    // ส่ง request ด้วย Fetch API
     fetch(url, {
       headers: {
         Accept: "text/vnd.turbo-stream.html"
       }
     })
-    .then(response => response.text())
-    .then(html => {
-      Turbo.renderStreamMessage(html)
+  }
+
+  previousWeek(event) {
+    event.preventDefault()
+    const startDate = new Date(event.currentTarget.dataset.startDate)
+    const newStartDate = new Date(startDate)
+    newStartDate.setDate(startDate.getDate() - 7)
+    
+    const url = new URL(window.location.href)
+    url.searchParams.set('start_date', newStartDate.toISOString().split('T')[0])
+    
+    // ส่ง request ด้วย Fetch API
+    fetch(url, {
+      headers: {
+        Accept: "text/vnd.turbo-stream.html"
+      }
+    })
+  }
+
+  nextWeek(event) {
+    event.preventDefault()
+    const startDate = new Date(event.currentTarget.dataset.startDate)
+    const newStartDate = new Date(startDate)
+    newStartDate.setDate(startDate.getDate() + 7)
+    
+    const url = new URL(window.location.href)
+    url.searchParams.set('start_date', newStartDate.toISOString().split('T')[0])
+    
+    // ส่ง request ด้วย Fetch API
+    fetch(url, {
+      headers: {
+        Accept: "text/vnd.turbo-stream.html"
+      }
+    })
+  }
+
+  select(event) {
+    event.preventDefault()
+    const url = new URL(event.currentTarget.href)
+    
+    // ส่ง request ด้วย Fetch API
+    fetch(url, {
+      headers: {
+        Accept: "text/vnd.turbo-stream.html"
+      }
     })
   }
 } 

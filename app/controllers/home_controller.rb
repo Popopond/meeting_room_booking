@@ -5,9 +5,14 @@ class HomeController < ApplicationController
   def index
     @upcoming_bookings = current_user.bookings.upcoming.limit(5)
     @recent_bookings = current_user.bookings.past.limit(5)
+
     respond_to do |format|
       format.html
-      format.turbo_stream
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.update("schedule_calendar", partial: "shared/room_schedule")
+        ]
+      end
     end
   end
 
@@ -20,6 +25,10 @@ class HomeController < ApplicationController
       @start_date = Date.today.beginning_of_week
     end
 
-    @selected_date = params[:date].present? ? Date.parse(params[:date]) : Date.today
+    if params[:date].present?
+      @selected_date = Date.parse(params[:date])
+    else
+      @selected_date = @start_date
+    end
   end
 end
