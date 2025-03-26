@@ -22,7 +22,7 @@
             </td>
             
             <% rooms.each do |room| %>
-              <% current_time = Time.current.change(hour: hour, min: minute.to_i) %>
+              <% current_time = @selected_date.to_time.change(hour: hour, min: minute.to_i) %>
               <% booking = room.bookings.where("start_time <= ? AND end_time > ?", current_time, current_time).first %>
               <% status = if booking && !booking.check_in_expired? && !booking.complete
                           'unavailable'

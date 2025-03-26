@@ -1,0 +1,52 @@
+<%
+  # คำนวณวันในสัปดาห์
+  start_date ||= Date.today.beginning_of_week
+  dates = (0..4).map { |i| start_date + i.days }
+%>
+
+<div class="flex items-center gap-4 mb-6">
+  <%= link_to request.path, 
+      class: "p-2 rounded-full hover:bg-gray-100",
+      data: {
+        turbo_frame: "schedule_calendar",
+        controller: "date-selector",
+        action: "click->date-selector#previousWeek",
+        start_date: start_date
+      } do %>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  <% end %>
+
+  <div class="flex flex-1 gap-2">
+    <% dates.each do |date| %>
+      <%= link_to request.path + "?date=#{date}", 
+          class: "flex-1 p-4 rounded-lg #{date == @selected_date ? 'bg-blue-100 border-blue-500' : 'bg-white border-gray-200'} border shadow hover:shadow-md transition-all", 
+          data: { 
+            turbo_frame: "schedule_calendar",
+            controller: "date-selector",
+            action: "click->date-selector#select"
+          } do %>
+        <div class="text-center">
+          <div class="text-sm text-gray-600"><%= date.strftime("%a") %></div>
+          <div class="text-xl font-bold <%= date == @selected_date ? 'text-blue-600' : 'text-gray-800' %>">
+            <%= date.strftime("%-d") %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= link_to request.path, 
+      class: "p-2 rounded-full hover:bg-gray-100",
+      data: {
+        turbo_frame: "schedule_calendar",
+        controller: "date-selector",
+        action: "click->date-selector#nextWeek",
+        start_date: start_date
+      } do %>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+  <% end %>
+</div> 
