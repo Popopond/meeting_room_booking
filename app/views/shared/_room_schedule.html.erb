@@ -1,50 +1,38 @@
-<% rooms = Room.order(:id) %>
+<% rooms = Room.all %>
 <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
-  <div class="grid grid-cols-[120px_repeat(<%= rooms.count %>,1fr)] divide-x divide-gray-200">
+  <table class="w-full">
     <!-- Header -->
-    <div class="time-cell"></div>
-    <% rooms.each do |room| %>
-      <div class="room-header px-6"><%= room.name %></div>
-    <% end %>
+    <tr class="border-b border-gray-200">
+      <th class="p-4"></th>
+      <% rooms.each do |room| %>
+        <th class="px-6 py-4 text-left"><%= room.name %></th>
+      <% end %>
+    </tr>
 
-    <!-- 8:00 -->
-    <div class="time-cell p-3 px-6 flex items-center">8.00 น.</div>
-    <% rooms.each do |room| %>
-      <div class="p-3 px-6">
-        <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
-          <span class="text-[#0BA811] font-medium">Available</span>
-        </div>
-      </div>
+    <!-- Time Slots -->
+    <% (8..18).each do |hour| %>
+      <% ["00", "30"].each do |minute| %>
+        <tr class="border-b border-gray-200">
+          <td class="p-3 px-6"><%= "#{hour}.#{minute} น." %></td>
+          
+          <% rooms.each do |room| %>
+            <td class="p-3 px-6">
+              <% current_time = Time.current.change(hour: hour, min: minute.to_i) %>
+              <% booking = room.bookings.where("start_time <= ? AND end_time > ?", current_time, current_time).first %>
+              
+              <% if booking %>
+                <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
+                  <span class="text-[#4475FF] font-medium">Unavailable</span>
+                </div>
+              <% else %>
+                <div class="rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4">
+                  <span class="text-[#0BA811] font-medium">Available</span>
+                </div>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
     <% end %>
-
-    <!-- 8:30 -->
-    <div class="time-cell p-3 px-6 flex items-center">8.30 น.</div>
-    <% rooms.each do |room| %>
-      <div class="p-3 px-6">
-        <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-          <span class="text-[#4475FF] font-medium">Unavailable</span>
-        </div>
-      </div>
-    <% end %>
-
-    <!-- 9:00 -->
-    <div class="time-cell p-3 px-6 flex items-center">9.00 น.</div>
-    <% rooms.each do |room| %>
-      <div class="p-3 px-6">
-        <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-          <span class="text-[#4475FF] font-medium">Unavailable</span>
-        </div>
-      </div>
-    <% end %>
-
-    <!-- 9:30 -->
-    <div class="time-cell p-3 px-6 flex items-center">9.30 น.</div>
-    <% rooms.each do |room| %>
-      <div class="p-3 px-6">
-        <div class="rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4">
-          <span class="text-[#4475FF] font-medium">Unavailable</span>
-        </div>
-      </div>
-    <% end %>
-  </div>
+  </table>
 </div>
