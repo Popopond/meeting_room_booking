@@ -2,26 +2,18 @@
   <h1 class="text-2xl font-bold">Meeting Room Booking</h1>
   <div class="flex items-center gap-3" data-controller="date-selector">
     <div class="flex items-center gap-2 h-10 px-4 rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M14.25 3H3.75C3.33579 3 3 3.33579 3 3.75V14.25C3 14.6642 3.33579 15 3.75 15H14.25C14.6642 15 15 14.6642 15 14.25V3.75C15 3.33579 14.6642 3 14.25 3Z" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M3 6.75H15" stroke="currentColor" stroke-width="1.5"/>
-      </svg>
+      <%= render "shared/icons/calendar" %>
       <input type="date" 
              class="border-none bg-transparent focus:outline-none cursor-pointer w-24"
              data-date-selector-target="datePicker"
              data-action="change->date-selector#dateSelected">
     </div>
     <button class="h-10 px-4 rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_4px_rgba(0,0,0,0.05)] flex items-center gap-2">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/>
-        <circle cx="9" cy="9" r="1" fill="currentColor"/>
-      </svg>
+      <%= render "shared/icons/week_view" %>
       Week View
     </button>
     <%= link_to new_booking_path, class: "h-10 px-4 rounded-[20px] bg-[#3366FF] text-white flex items-center gap-2" do %>
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M7 1V13M1 7H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+      <%= render "shared/icons/add_event" %>
       Add Event
     <% end %>
   </div>
