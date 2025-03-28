@@ -10,4 +10,4 @@ class BookingMailer < ApplicationMailer
       subject: "ยืนยันการจองห้องประชุม #{@room.name}"
     )
   end
-end 
+end

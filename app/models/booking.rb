@@ -12,9 +12,9 @@ class Booking < ApplicationRecord
   before_create :generate_confirmation_code
   after_create :send_confirmation_email
 
-  scope :upcoming, -> { where('start_time > ?', Time.current).order(start_time: :asc) }
-  scope :past, -> { where('end_time < ?', Time.current).order(start_time: :desc) }
-  scope :current, -> { where('start_time <= ? AND end_time > ?', Time.current, Time.current) }
+  scope :upcoming, -> { where("start_time > ?", Time.current).order(start_time: :asc) }
+  scope :past, -> { where("end_time < ?", Time.current).order(start_time: :desc) }
+  scope :current, -> { where("start_time <= ? AND end_time > ?", Time.current, Time.current) }
 
   def add_participant(user)
     return false if user == self.user
@@ -46,11 +46,11 @@ class Booking < ApplicationRecord
 
   def can_check_in?
     return false if complete || check_in.present?
-    
+
     current_time = Time.zone.now
     booking_start = start_time.in_time_zone
     check_in_deadline = booking_start + 15.minutes
-    
+
     current_time.between?(booking_start, check_in_deadline)
   end
 

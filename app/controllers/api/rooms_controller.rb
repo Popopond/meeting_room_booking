@@ -3,12 +3,11 @@ class Api::RoomsController < ApplicationController
 
   def index
     rooms = Room.includes(:status).all
-    render json: rooms, include: [:status]
+    render json: rooms, include: [ :status ]
   end
 
   def show
     room = Room.find(params[:id])
-    render json: room, include: [:status, :bookings]
+    render json: room, include: [ :status, :bookings ]
   end
 end
-

@@ -71,12 +71,12 @@ class BookingsController < ApplicationController
 
   def cancel
     @booking = current_user.bookings.find(params[:id])
-    
+
     if @booking.complete?
       redirect_to bookings_url, alert: "ไม่สามารถยกเลิกการจองที่เช็คอินแล้วได้"
       return
     end
-    
+
     if @booking.destroy
       update_room_status_to_available
       redirect_to bookings_url, notice: "ยกเลิกการจองเรียบร้อยแล้ว"
@@ -87,7 +87,7 @@ class BookingsController < ApplicationController
 
   def add_participant
     user = User.find(params[:user_id])
-    
+
     if @booking.add_participant(user)
       redirect_to @booking, notice: "เพิ่มผู้เข้าร่วมประชุมเรียบร้อยแล้ว"
     else
@@ -97,7 +97,7 @@ class BookingsController < ApplicationController
 
   def remove_participant
     user = User.find(params[:user_id])
-    
+
     if @booking.remove_participant(user)
       redirect_to @booking, notice: "ลบผู้เข้าร่วมประชุมเรียบร้อยแล้ว"
     else
@@ -112,7 +112,7 @@ class BookingsController < ApplicationController
       render json: { error: "Invalid booking ID" }, status: :bad_request
       return
     end
-  
+
     @booking = current_user.bookings.find(params[:id])
   end
 
@@ -133,9 +133,9 @@ class BookingsController < ApplicationController
 
   def update_room_status
     if Time.current >= @booking.start_time
-      unavailable_status = Status.find_by(status_name: "Unavailable") 
+      unavailable_status = Status.find_by(status_name: "Unavailable")
       @booking.room.update(status_id: unavailable_status&.id)
-      
+
       if @booking.room.status_id == unavailable_status&.id
         ReleaseRoomJob.set(wait_until: @booking.end_time).perform_later(@booking.id)
       else

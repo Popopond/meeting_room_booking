@@ -1,6 +1,6 @@
 class HomeController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_selected_date, only: [:index]
+  before_action :set_selected_date, only: [ :index ]
 
   def index
     @upcoming_bookings = current_user.bookings.upcoming.limit(5)

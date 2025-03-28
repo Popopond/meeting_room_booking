@@ -31,7 +31,7 @@ class CheckIn < ApplicationRecord
 
     if current_time > check_in_deadline
       errors.add(:base, "หมดเวลาเช็คอินแล้ว (เช็คอินได้ถึง #{check_in_deadline.strftime("%H:%M")} เท่านั้น)")
-      return
+      nil
     end
   end
 end

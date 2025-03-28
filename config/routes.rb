@@ -17,12 +17,12 @@ Rails.application.routes.draw do
 
   namespace :api do
     get "check_ins/create"
-    resources :rooms, only: [:index, :show]
-    resources :bookings, only: [:index, :create, :show, :destroy] do
+    resources :rooms, only: [ :index, :show ]
+    resources :bookings, only: [ :index, :create, :show, :destroy ] do
       member do
-        get 'generate_qr'
+        get "generate_qr"
       end
     end
-    resources :check_ins, only: [:create]
+    resources :check_ins, only: [ :create ]
   end
 end

@@ -7,7 +7,7 @@ class CheckInsController < ApplicationController
 
   def create
     @booking = Booking.find_by(confirmation_code: params[:confirmation_code])
-    
+
     if @booking.nil?
       flash[:alert] = "ไม่พบรหัสยืนยันนี้ในระบบ กรุณาตรวจสอบรหัสอีกครั้ง"
       redirect_to new_check_in_path
@@ -36,7 +36,7 @@ class CheckInsController < ApplicationController
       current_time = Time.zone.now.strftime("%H:%M")
       start_time = @booking.start_time.in_time_zone.strftime("%H:%M")
       check_in_deadline = (@booking.start_time.in_time_zone + 15.minutes).strftime("%H:%M")
-      
+
       flash[:alert] = "ไม่สามารถเช็คอินได้ในขณะนี้ (เวลาปัจจุบัน: #{current_time}, เช็คอินได้ตั้งแต่ #{start_time} ถึง #{check_in_deadline} เท่านั้น)"
       redirect_to new_check_in_path(code: params[:confirmation_code])
       return
