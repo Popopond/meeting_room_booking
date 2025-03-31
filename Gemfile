@@ -49,6 +49,12 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem "rspec-rails", "~> 7.1"
+  gem "factory_bot_rails"
+  gem "faker"
+  gem "webdrivers"
+  gem "selenium-webdriver"
 end
 
 group :development do
@@ -67,3 +73,6 @@ gem "devise", "~> 4.9"
 gem "rqrcode", "~> 2.2"
 
 gem "tailwindcss-rails"
+
+gem "rspec-rails", "~> 7.1", :group => :development
+gem "test", "~> 1.0", :group => :development
