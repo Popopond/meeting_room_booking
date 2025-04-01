@@ -16,6 +16,13 @@ class BookingsController < ApplicationController
 
   def new
     @booking = current_user.bookings.build
+    
+    if params[:room_id].present? && params[:date].present? && params[:start_time].present? && params[:end_time].present?
+      @booking.room_id = params[:room_id]
+      @booking.start_time = Time.zone.parse(params[:start_time])
+      @booking.end_time = Time.zone.parse(params[:end_time])
+    end
+    
     @rooms = Room.all
   end
 

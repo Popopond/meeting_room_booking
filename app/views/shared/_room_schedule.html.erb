@@ -40,7 +40,12 @@
                       <div class="text-sm text-[#4475FF] mt-1"><%= booking.user.username %></div>
                     <% end %>
                   <% else %>
-                    <%= content_tag(:div, class: "rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4 text-center") do %>
+                    <%= link_to new_booking_path(
+                      room_id: room.id,
+                      date: @selected_date,
+                      start_time: current_time,
+                      end_time: current_time + 30.minutes
+                    ), class: "rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4 text-center block" do %>
                       <span class="text-[#0BA811] font-medium">Available</span>
                     <% end %>
                   <% end %>
