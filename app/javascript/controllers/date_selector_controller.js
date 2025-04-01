@@ -34,6 +34,13 @@ export default class extends Controller {
     this.datePickerTarget.addEventListener('focus', () => {
       this.datePickerTarget.showPicker()
     })
+
+    // อัพเดท date picker จาก URL parameters
+    const url = new URL(window.location.href)
+    const date = url.searchParams.get('date')
+    if (date) {
+      this.datePickerTarget.value = date
+    }
   }
 
   dateSelected(event) {
@@ -47,25 +54,27 @@ export default class extends Controller {
     const date = new Date(selectedDate)
     const formattedDate = date.toISOString().split('T')[0]
     
-    // ดึงข้อมูลการจอง
-    this.fetchBookings(formattedDate)
-  }
-
-  fetchBookings(date) {
-    fetch(`/bookings?date=${date}`, {
+    // อัพเดท URL และส่ง request
+    const url = new URL(window.location.href)
+    url.searchParams.set('date', formattedDate)
+    url.searchParams.set('start_date', this.getStartDateOfWeek(date).toISOString().split('T')[0])
+    
+    // ส่ง request ด้วย Fetch API
+    fetch(url, {
       headers: {
-        "Accept": "text/vnd.turbo-stream.html",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
+        Accept: "text/vnd.turbo-stream.html",
         "X-Requested-With": "XMLHttpRequest"
       }
+    }).then(response => {
+      // อัพเดท URL ในเบราว์เซอร์
+      window.history.pushState({}, '', url)
     })
-    .then(response => response.text())
-    .then(html => {
-      Turbo.renderStreamMessage(html)
-    })
-    .catch(error => {
-      console.error('Error fetching bookings:', error)
-    })
+  }
+
+  getStartDateOfWeek(date) {
+    const startDate = new Date(date)
+    startDate.setDate(date.getDate() - date.getDay()) // เริ่มต้นที่วันอาทิตย์
+    return startDate
   }
 
   openDatePicker() {
@@ -87,6 +96,9 @@ export default class extends Controller {
         Accept: "text/vnd.turbo-stream.html",
         "X-Requested-With": "XMLHttpRequest"
       }
+    }).then(response => {
+      // อัพเดท URL ในเบราว์เซอร์
+      window.history.pushState({}, '', url)
     })
   }
 
@@ -105,18 +117,30 @@ export default class extends Controller {
         Accept: "text/vnd.turbo-stream.html",
         "X-Requested-With": "XMLHttpRequest"
       }
+    }).then(response => {
+      // อัพเดท URL ในเบราว์เซอร์
+      window.history.pushState({}, '', url)
     })
   }
 
   select(event) {
     event.preventDefault()
     const url = new URL(event.currentTarget.href)
+    const date = url.searchParams.get('date')
     
     // ส่ง request ด้วย Fetch API
     fetch(url, {
       headers: {
         Accept: "text/vnd.turbo-stream.html",
         "X-Requested-With": "XMLHttpRequest"
+      }
+    }).then(response => {
+      // อัพเดท URL ในเบราว์เซอร์
+      window.history.pushState({}, '', url)
+      
+      // อัพเดทค่าใน date picker
+      if (this.hasDatePickerTarget()) {
+        this.datePickerTarget.value = date
       }
     })
   }
