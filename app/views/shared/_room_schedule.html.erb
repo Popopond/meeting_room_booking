@@ -40,12 +40,14 @@
                       <div class="text-sm text-[#4475FF] mt-1"><%= booking.user.username %></div>
                     <% end %>
                   <% else %>
-                    <%= link_to new_booking_path(
-                      room_id: room.id,
-                      date: @selected_date,
-                      start_time: current_time,
-                      end_time: current_time + 30.minutes
-                    ), class: "rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4 text-center block" do %>
+                    <%= content_tag(:div, 
+                      class: "rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4 text-center cursor-pointer time-slot",
+                      data: {
+                        room_id: room.id,
+                        date: @selected_date,
+                        start_time: current_time,
+                        end_time: current_time + 30.minutes
+                      }) do %>
                       <span class="text-[#0BA811] font-medium">Available</span>
                     <% end %>
                   <% end %>
@@ -58,3 +60,78 @@
     </div>
   </div>
 <% end %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let selectedSlots = new Set()
+  let selectedRoomId = null
+  let selectedDate = null
+  let selectedStartTime = null
+  let selectedEndTime = null
+
+  // เพิ่ม event listener ให้กับทุก time slot
+  document.querySelectorAll('.time-slot').forEach(slot => {
+    slot.addEventListener('click', function(e) {
+      e.preventDefault()
+      const roomId = this.dataset.roomId
+      const date = this.dataset.date
+      const startTime = this.dataset.startTime
+      const endTime = this.dataset.endTime
+
+      // ถ้าเลือกห้องอื่น ให้ล้างการเลือกเดิม
+      if (selectedRoomId && selectedRoomId !== roomId) {
+        clearSelection()
+      }
+
+      selectedRoomId = roomId
+      selectedDate = date
+
+      // เพิ่ม/ลบ slot ที่เลือก
+      if (this.classList.contains('selected')) {
+        this.classList.remove('selected', 'bg-red-500', 'text-white', 'border-red-500')
+        selectedSlots.delete(this)
+      } else {
+        this.classList.add('selected', 'bg-red-500', 'text-white', 'border-red-500')
+        selectedSlots.add(this)
+        
+        // ถ้าเป็น slot แรกที่เลือก ให้ตั้งค่าเวลาเริ่มต้น
+        if (selectedSlots.size === 1) {
+          selectedStartTime = startTime
+        }
+        // อัพเดทเวลาสิ้นสุดเป็นเวลาล่าสุดที่เลือก
+        selectedEndTime = endTime
+      }
+
+      // อัพเดทปุ่ม Add Event
+      updateAddEventButton()
+    })
+  })
+
+  function clearSelection() {
+    selectedSlots.forEach(slot => {
+      slot.classList.remove('selected', 'bg-red-500', 'text-white', 'border-red-500')
+    })
+    selectedSlots.clear()
+    selectedRoomId = null
+    selectedDate = null
+    selectedStartTime = null
+    selectedEndTime = null
+    updateAddEventButton()
+  }
+
+  function updateAddEventButton() {
+    const addEventButton = document.querySelector('.add-event-button')
+    if (addEventButton) {
+      if (selectedSlots.size > 0) {
+        addEventButton.classList.remove('opacity-50', 'cursor-not-allowed')
+        addEventButton.classList.add('hover:bg-blue-600')
+        addEventButton.href = `/bookings/new?room_id=${selectedRoomId}&date=${selectedDate}&start_time=${selectedStartTime}&end_time=${selectedEndTime}`
+      } else {
+        addEventButton.classList.add('opacity-50', 'cursor-not-allowed')
+        addEventButton.classList.remove('hover:bg-blue-600')
+        addEventButton.href = '#'
+      }
+    }
+  }
+})
+</script>

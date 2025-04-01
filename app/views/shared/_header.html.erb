@@ -1,7 +1,7 @@
 <div class="flex justify-between items-center py-4 px-6">
   <h1 class="text-2xl font-bold">Meeting Room Booking</h1>
-  <div class="flex items-center gap-3" data-controller="date-selector" data-turbo="false">
-    <div class="flex items-center gap-2 h-10 px-4 rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_4px_rgba(0,0,0,0.05)]" data-turbo="false">
+  <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 h-10 px-4 rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
       <%= render "shared/icons/calendar" %>
       <input type="date" 
              class="border-none bg-transparent focus:outline-none cursor-pointer w-24"
@@ -12,11 +12,13 @@
              data-turbo-drive="false"
              min="<%= Date.current.to_s %>">
     </div>
-    <button class="h-10 px-4 rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_4px_rgba(0,0,0,0.05)] flex items-center gap-2" data-turbo="false">
+    <button class="h-10 px-4 rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_4px_rgba(0,0,0,0.05)] flex items-center gap-2">
       <%= render "shared/icons/week_view" %>
       Week View
     </button>
-    <%= link_to new_booking_path, class: "h-10 px-4 rounded-[20px] bg-[#3366FF] text-white flex items-center gap-2", data: { turbo: false } do %>
+    <%= link_to "#", 
+        class: "h-10 px-4 rounded-[20px] bg-[#3366FF] text-white flex items-center gap-2 opacity-50 cursor-not-allowed add-event-button", 
+        data: { turbo: false } do %>
       <%= render "shared/icons/add_event" %>
       Add Event
     <% end %>
