@@ -2,6 +2,9 @@
   # คำนวณวันในสัปดาห์
   start_date ||= Date.today.beginning_of_week
   dates = (0..4).map { |i| start_date + i.days }
+  
+  # ถ้าไม่มี selected_date ให้ใช้วันปัจจุบัน
+  @selected_date ||= Date.current
 %>
 
 <%= turbo_frame_tag "schedule_calendar" do %>
