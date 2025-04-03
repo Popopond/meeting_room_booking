@@ -1,15 +1,16 @@
 <%
   # คำนวณวันในสัปดาห์
-  start_date ||= Date.today.beginning_of_week
-  dates = (0..4).map { |i| start_date + i.days }
+  current_date = Date.current
+  start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : current_date
+  dates = (0..6).map { |i| start_date + i.days }
   
   # ถ้าไม่มี selected_date ให้ใช้วันปัจจุบัน
-  @selected_date ||= Date.current
+  @selected_date = params[:date].present? ? Date.parse(params[:date]) : current_date
 %>
 
 <%= turbo_frame_tag "schedule_calendar" do %>
   <div class="flex items-center gap-4 mb-6">
-    <%= link_to request.path + "?start_date=#{start_date - 7.days}", 
+    <%= link_to request.path + "?start_date=#{start_date - 7.days}&date=#{current_date}", 
         class: "p-2 rounded-full hover:bg-gray-100",
         data: {
           turbo_frame: "schedule_calendar",
@@ -39,7 +40,7 @@
       <% end %>
     </div>
 
-    <%= link_to request.path + "?start_date=#{start_date + 7.days}", 
+    <%= link_to request.path + "?start_date=#{start_date + 7.days}&date=#{current_date}", 
         class: "p-2 rounded-full hover:bg-gray-100",
         data: {
           turbo_frame: "schedule_calendar",
