@@ -27,6 +27,7 @@
               <% rooms.each do |room| %>
                 <% current_time = @selected_date.to_time.change(hour: hour, min: minute.to_i) %>
                 <% booking = room.bookings.where("start_time <= ? AND end_time > ?", current_time, current_time).first %>
+                <% is_past_datetime = current_time < Time.current %>
                 <% status = if booking && !booking.check_in_expired? && !booking.complete
                             'unavailable'
                           else
@@ -41,14 +42,14 @@
                     <% end %>
                   <% else %>
                     <%= content_tag(:div, 
-                      class: "rounded-2xl border border-[#0BA811]/30 bg-[#EBFFF3] p-4 text-center cursor-pointer time-slot",
+                      class: "rounded-2xl border #{is_past_datetime ? 'border-gray-200 bg-gray-50 cursor-not-allowed' : 'border-[#0BA811]/30 bg-[#EBFFF3] cursor-pointer time-slot'} p-4 text-center",
                       data: {
                         room_id: room.id,
                         date: @selected_date,
                         start_time: current_time,
                         end_time: current_time + 30.minutes
                       }) do %>
-                      <span class="text-[#0BA811] font-medium">Available</span>
+                      <span class="#{is_past_datetime ? 'text-gray-400' : 'text-[#0BA811]'} font-medium">Available</span>
                     <% end %>
                   <% end %>
                 </td>
