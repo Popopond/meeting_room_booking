@@ -1,25 +1,64 @@
 <nav class="bg-blue-600 shadow-lg">
-  <div class="container mx-auto flex justify-between items-center p-4">
-    <a href="<%= root_path %>" class="flex items-center space-x-2 text-3xl font-extrabold text-white hover:text-gray-200 transition duration-300 ease-in-out">
-      <%= render 'icon/logo' ,class: " w-52 h-52 " %> 
+  <div class="container mx-auto flex justify-between items-center py-2">
+    <a href="<%= root_path %>" class="flex items-center space-x-2 text-2xl font-extrabold text-white hover:text-gray-200 transition duration-300 ease-in-out">
+      <%= render 'icon/logo', class: "w-12 h-12" %> 
       <span>Sync</span>
     </a>
 
     <div class="flex space-x-8 items-center">
       <div class="flex space-x-6">
-        <%= link_to "Home", root_path, class: "text-lg text-white hover:text-yellow-300 transition duration-300 ease-in-out" %>
-        <%= link_to "Room", rooms_path, class: "text-lg text-white hover:text-yellow-300 transition duration-300 ease-in-out" %>
-        <%= link_to "จองห้อง", bookings_path, class: "text-lg text-white hover:text-yellow-300 transition duration-300 ease-in-out" %>
-        <%= link_to "สถานะห้อง", statuses_path, class: "text-lg text-white hover:text-yellow-300 transition duration-300 ease-in-out" %>
-        <%= link_to "เช็คอิน", new_check_in_path, class: "text-lg text-white hover:text-yellow-300 transition duration-300 ease-in-out" %>
+        <%= link_to root_path, class: "flex items-center space-x-1 text-base text-white hover:text-yellow-300 transition duration-300 ease-in-out" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span>Home</span>
+        <% end %>
+
+        <%= link_to rooms_path, class: "flex items-center space-x-1 text-base text-white hover:text-yellow-300 transition duration-300 ease-in-out" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          <span>Rooms</span>
+        <% end %>
+
+        <%= link_to bookings_path, class: "flex items-center space-x-1 text-base text-white hover:text-yellow-300 transition duration-300 ease-in-out" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span>Booking</span>
+        <% end %>
+
+        <%= link_to statuses_path, class: "flex items-center space-x-1 text-base text-white hover:text-yellow-300 transition duration-300 ease-in-out" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <span>Room Status</span>
+        <% end %>
+
+        <%= link_to new_check_in_path, class: "flex items-center space-x-1 text-base text-white hover:text-yellow-300 transition duration-300 ease-in-out" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+          </svg>
+          <span>Check In</span>
+        <% end %>
       </div>
 
       <div class="flex space-x-6 items-center">
         <% if user_signed_in? %>
           <span class="text-sm text-white">Welcome, <%= current_user.email %></span>
-          <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "border-2 border-white bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 hover:border-yellow-300 transition duration-300 ease-in-out" %>
+          <%= button_to destroy_user_session_path, method: :delete, class: "flex items-center space-x-1 border border-white bg-red-600 text-white px-4 py-1.5 rounded-lg shadow-md hover:bg-red-700 hover:border-yellow-300 transition duration-300 ease-in-out text-sm" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span>Sign out</span>
+          <% end %>
         <% else %>
-          <%= link_to "Log in", new_user_session_path, class: "border-2 border-white bg-yellow-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-yellow-600 hover:border-blue-300 transition duration-300 ease-in-out" %>
+          <%= link_to new_user_session_path, class: "flex items-center space-x-1 border border-white bg-yellow-500 text-white px-4 py-1.5 rounded-lg shadow-md hover:bg-yellow-600 hover:border-blue-300 transition duration-300 ease-in-out text-sm" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            <span>Sign in</span>
+          <% end %>
         <% end %>
       </div>
     </div>
