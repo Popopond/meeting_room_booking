@@ -89,10 +89,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // เพิ่ม/ลบ slot ที่เลือก
       if (this.classList.contains('selected')) {
-        this.classList.remove('selected', 'bg-red-500', 'text-white', 'border-red-500')
+        this.classList.remove('selected', 'bg-blue-100', 'text-blue-800', 'border-blue-500')
         selectedSlots.delete(this)
       } else {
-        this.classList.add('selected', 'bg-red-500', 'text-black', 'border-red-500')
+        this.classList.add('selected', 'bg-blue-100', 'text-blue-800', 'border-blue-500')
         selectedSlots.add(this)
         
         // ถ้าเป็น slot แรกที่เลือก ให้ตั้งค่าเวลาเริ่มต้น
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function clearSelection() {
     selectedSlots.forEach(slot => {
-      slot.classList.remove('selected', 'bg-red-500', 'text-white', 'border-red-500')
+      slot.classList.remove('selected', 'bg-blue-100', 'text-blue-800', 'border-blue-500')
     })
     selectedSlots.clear()
     selectedRoomId = null
