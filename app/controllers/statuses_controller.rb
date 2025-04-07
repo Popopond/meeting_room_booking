@@ -1,4 +1,5 @@
 class StatusesController < ApplicationController
+  include AdminAuthenticatable
   before_action :set_status, only: %i[ show edit update destroy ]
 
   # GET /statuses or /statuses.json

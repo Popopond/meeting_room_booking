@@ -1,4 +1,5 @@
 class RoomsController < ApplicationController
+  include AdminAuthenticatable
   before_action :set_room, only: %i[ show edit update destroy ]
 
   # GET /rooms or /rooms.json
