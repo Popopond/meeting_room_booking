@@ -72,7 +72,7 @@ gem "devise", "~> 4.9"
 
 gem "rqrcode", "~> 2.2"
 
-gem "tailwindcss-rails"
+gem "tailwindcss-rails", "~> 3.3.1"
 
 gem "rspec-rails", "~> 7.1", group: :development
 gem "test", "~> 1.0", group: :development
