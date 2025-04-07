@@ -3,7 +3,11 @@ class BookingsController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @bookings = current_user.bookings.includes(:room).order(start_time: :desc)
+    @bookings = if current_user.role == "admin"
+      Booking.includes(:room, :user).order(start_time: :desc)
+    else
+      current_user.bookings.includes(:room).order(start_time: :desc)
+    end
     flash.now[:notice] = "ยังไม่มีการจองห้องประชุม" if @bookings.empty?
   end
 
@@ -16,13 +20,13 @@ class BookingsController < ApplicationController
 
   def new
     @booking = current_user.bookings.build
-    
+
     if params[:room_id].present? && params[:date].present? && params[:start_time].present? && params[:end_time].present?
       @booking.room_id = params[:room_id]
       @booking.start_time = Time.zone.parse(params[:start_time])
       @booking.end_time = Time.zone.parse(params[:end_time])
     end
-    
+
     @rooms = Room.all
   end
 

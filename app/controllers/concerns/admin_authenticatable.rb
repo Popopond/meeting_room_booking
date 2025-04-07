@@ -8,9 +8,9 @@ module AdminAuthenticatable
   private
 
   def authenticate_admin!
-    unless current_user&.role == 'admin'
-      flash[:alert] = 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้'
+    unless current_user&.role == "admin"
+      flash[:alert] = "คุณไม่มีสิทธิ์เข้าถึงหน้านี้"
       redirect_to root_path
     end
   end
-end 
+end

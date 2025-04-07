@@ -1,16 +1,38 @@
 <p style="color: green"><%= notice %></p>
 
-<% content_for :title, "Statuses" %>
+<% content_for :title, "สถานะห้องประชุม" %>
 
-<h1>Statuses</h1>
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold">สถานะห้องประชุม</h1>
+    <%= link_to "เพิ่มสถานะใหม่", new_status_path, class: "bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300" %>
+  </div>
 
-<div id="statuses">
-  <% @statuses.each do |status| %>
-    <%= render status %>
-    <p>
-      <%= link_to "Show this status", status %>
-    </p>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @statuses.each do |status| %>
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h2 class="text-xl font-semibold"><%= status.status_name %></h2>
+          </div>
+        </div>
+
+        <div class="border-t pt-4">
+          <div class="flex justify-end space-x-2">
+            <%= link_to "ดูรายละเอียด", status, class: "text-blue-500 hover:text-blue-700" %>
+            <%= link_to "แก้ไข", edit_status_path(status), class: "text-yellow-500 hover:text-yellow-700" %>
+            <%= button_to "ลบ", status_path(status), method: :delete, 
+                form: { data: { turbo_confirm: "คุณแน่ใจหรือไม่ที่จะลบสถานะนี้?" } },
+                class: "text-red-500 hover:text-red-700 bg-transparent border-none cursor-pointer" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @statuses.empty? %>
+    <div class="text-center py-8">
+      <p class="text-gray-500">ยังไม่มีสถานะห้องประชุม</p>
+    </div>
   <% end %>
 </div>
-
-<%= link_to "New status", new_status_path %>

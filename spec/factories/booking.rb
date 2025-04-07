@@ -7,4 +7,4 @@ FactoryBot.define do
     confirmation_code { SecureRandom.alphanumeric(6) }
     complete { false }
   end
-end 
+end

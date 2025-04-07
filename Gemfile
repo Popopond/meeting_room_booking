@@ -74,5 +74,5 @@ gem "rqrcode", "~> 2.2"
 
 gem "tailwindcss-rails"
 
-gem "rspec-rails", "~> 7.1", :group => :development
-gem "test", "~> 1.0", :group => :development
+gem "rspec-rails", "~> 7.1", group: :development
+gem "test", "~> 1.0", group: :development

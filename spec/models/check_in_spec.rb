@@ -49,4 +49,4 @@ RSpec.describe CheckIn, type: :model do
       expect(check_in.confirmation_code).to eq(booking.confirmation_code)
     end
   end
-end 
+end

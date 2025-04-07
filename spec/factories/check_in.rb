@@ -5,4 +5,4 @@ FactoryBot.define do
     check_in { Time.current }
     confirmation_code { SecureRandom.alphanumeric(6) }
   end
-end 
+end

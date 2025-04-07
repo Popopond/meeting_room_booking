@@ -5,4 +5,4 @@ FactoryBot.define do
     description { Faker::Lorem.paragraph }
     association :status, factory: :status
   end
-end 
+end
