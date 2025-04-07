@@ -1,26 +1,93 @@
-<h2>Log in</h2>
-
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
-  </div>
-
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full">
+    <div class="text-center">
+      <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+        Sign in to your account
+      </h2>
+      <p class="mt-2 text-sm text-gray-600">
+        Or
+        <%= link_to "Create new account", new_registration_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
+      </p>
     </div>
-  <% end %>
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "mt-8 space-y-6" }) do |f| %>
+      <div class="rounded-md shadow-sm -space-y-px">
+        <div>
+          <%= f.label :email, "Email", class: "sr-only" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email",
+              class: "appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm",
+              placeholder: "Email address" %>
+        </div>
+        <div>
+          <%= f.label :password, "Password", class: "sr-only" %>
+          <div class="relative" data-controller="password-toggle">
+            <%= f.password_field :password, autocomplete: "current-password",
+                class: "appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm pr-10",
+                placeholder: "Password" %>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3" data-action="click->password-toggle#toggle" style="cursor: pointer;">
+              <svg class="h-5 w-5 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mt-6">
+        <% if devise_mapping.rememberable? %>
+          <div class="flex items-center space-x-3">
+            <div class="relative flex items-start">
+              <%= f.check_box :remember_me, 
+                  class: "h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" %>
+              <%= f.label :remember_me, "Remember me", 
+                  class: "ml-3 block text-sm font-medium text-gray-700 select-none cursor-pointer" %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="text-sm">
+          <%= link_to "Forgot your password?", new_password_path(resource_name), 
+              class: "font-medium text-blue-600 hover:text-blue-500 transition-colors duration-150" %>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <%= f.submit "Sign in", class: "group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out" %>
+      </div>
+    <% end %>
+
+    <% if devise_mapping.omniauthable? %>
+      <div class="mt-6">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-gray-50 text-gray-500">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-3 gap-3">
+          <% resource_class.omniauth_providers.each do |provider| %>
+            <%= link_to omniauth_authorize_path(resource_name, provider), class: "w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" do %>
+              <% case provider 
+                 when :google_oauth2 %>
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.545,12.151L12.545,12.151c0,1.054,0.855,1.909,1.909,1.909h3.536c-0.367,1.719-1.159,3.25-2.534,4.363 c-1.803,1.482-4.058,2.027-6.321,1.525c-2.263-0.501-4.143-1.957-5.23-4.049c-1.089-2.091-1.089-4.513,0-6.604 c1.087-2.092,2.967-3.548,5.23-4.049c1.359-0.301,2.769-0.223,4.118,0.21v3.072c0,1.054,0.855,1.909,1.909,1.909h1.909V12.151z"/>
+                  <path d="M23.332,12.151c0,0.728-0.591,1.318-1.318,1.318h-4.659v-2.636h4.659C22.741,10.833,23.332,11.423,23.332,12.151z"/>
+                </svg>
+              <% when :facebook %>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
   </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>
