@@ -1,0 +1,16 @@
+# Exported from Render on 2025-04-08T02:12:34Z
+services:
+- type: web
+  name: meeting_room_booking
+  runtime: docker
+  repo: https://github.com/Popopond/meeting_room_booking
+  plan: free
+  envVars:
+  - key: RAILS_MASTER_KEY
+    sync: false
+  - key: WEB_CONCURRENCY
+    sync: false
+  region: oregon
+  dockerContext: .
+  dockerfilePath: ./Dockerfile
+version: "1"
