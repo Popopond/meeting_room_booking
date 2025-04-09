@@ -1,30 +1,38 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-md w-full">
-    <div class="text-center">
-      <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" data-testid="login-page">
+  <div class="max-w-md w-full" data-testid="login-container">
+    <div class="text-center" data-testid="login-header">
+      <h2 class="mt-6 text-3xl font-extrabold text-gray-900" data-testid="login-title">
         Sign in to your account
       </h2>
-      <p class="mt-2 text-sm text-gray-600">
+      <p class="mt-2 text-sm text-gray-600" data-testid="login-subtitle">
         Or
-        <%= link_to "Create new account", new_registration_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
+        <%= link_to "Create new account", new_registration_path(resource_name), 
+            class: "font-medium text-blue-600 hover:text-blue-500",
+            data_testid: "signup-link" %>
       </p>
     </div>
 
-    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "mt-8 space-y-6" }) do |f| %>
-      <div class="rounded-md shadow-sm -space-y-px">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), 
+        html: { class: "mt-8 space-y-6", data_testid: "login-form" }) do |f| %>
+      <div class="rounded-md shadow-sm -space-y-px" data-testid="login-inputs">
         <div>
           <%= f.label :email, "Email", class: "sr-only" %>
           <%= f.email_field :email, autofocus: true, autocomplete: "email",
               class: "appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm",
-              placeholder: "Email address" %>
+              placeholder: "Email address",
+              data_testid: "email-input" %>
         </div>
         <div>
           <%= f.label :password, "Password", class: "sr-only" %>
-          <div class="relative" data-controller="password-toggle">
+          <div class="relative" data-controller="password-toggle" data-testid="password-field">
             <%= f.password_field :password, autocomplete: "current-password",
                 class: "appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm pr-10",
-                placeholder: "Password" %>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3" data-action="click->password-toggle#toggle" style="cursor: pointer;">
+                placeholder: "Password",
+                data_testid: "password-input" %>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3" 
+                data-action="click->password-toggle#toggle" 
+                style="cursor: pointer;"
+                data-testid="password-toggle">
               <svg class="h-5 w-5 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -34,26 +42,31 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-between mt-6">
+      <div class="flex items-center justify-between mt-6" data-testid="login-options">
         <% if devise_mapping.rememberable? %>
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-3" data-testid="remember-me">
             <div class="relative flex items-start">
               <%= f.check_box :remember_me, 
-                  class: "h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" %>
+                  class: "h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer",
+                  data_testid: "remember-me-checkbox" %>
               <%= f.label :remember_me, "Remember me", 
-                  class: "ml-3 block text-sm font-medium text-gray-700 select-none cursor-pointer" %>
+                  class: "ml-3 block text-sm font-medium text-gray-700 select-none cursor-pointer",
+                  data_testid: "remember-me-label" %>
             </div>
           </div>
         <% end %>
 
         <div class="text-sm">
           <%= link_to "Forgot your password?", new_password_path(resource_name), 
-              class: "font-medium text-blue-600 hover:text-blue-500 transition-colors duration-150" %>
+              class: "font-medium text-blue-600 hover:text-blue-500",
+              data_testid: "forgot-password-link" %>
         </div>
       </div>
 
-      <div class="mt-6">
-        <%= f.submit "Sign in", class: "group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out" %>
+      <div>
+        <%= f.submit "Sign in", 
+            class: "group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+            data_testid: "login-submit-button" %>
       </div>
     <% end %>
 
