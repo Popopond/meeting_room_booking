@@ -1,18 +1,19 @@
-<div class="flex justify-between items-center py-4 px-6" data-controller="date-selector">
+<div class="flex justify-between items-center py-4 px-6" data-controller="date-selector" data-testid="header">
   <div class="flex items-center gap-4">
-    <h1 class="text-2xl font-bold">Meeting Room Booking</h1>
-    <div class="text-lg text-gray-600" data-date-selector-target="monthDisplay">
+    <h1 class="text-2xl font-bold" data-testid="header-title">Meeting Room Booking</h1>
+    <div class="text-lg text-gray-600" data-date-selector-target="monthDisplay" data-testid="month-display">
       <%= @start_date&.strftime("%B %Y") || Date.current.strftime("%B %Y") %>
     </div>
   </div>
   <div class="flex items-center gap-3">
-    <button class="h-10 px-4 rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_4px_rgba(0,0,0,0.05)] flex items-center gap-2">
+    <button class="h-10 px-4 rounded-[20px] border border-gray-200 bg-white shadow-[0_2px_4px_rgba(0,0,0,0.05)] flex items-center gap-2" data-testid="week-view-button">
       <%= render "shared/icons/week_view" %>
       Week View
     </button>
     <%= link_to "#", 
         class: "h-10 px-4 rounded-[20px] bg-[#3366FF] text-white flex items-center gap-2 opacity-50 cursor-not-allowed add-event-button", 
-        data: { turbo: false } do %>
+        data: { turbo: false },
+        data_testid: "add-event-button" do %>
       <%= render "shared/icons/add_event" %>
       Add Event
     <% end %>

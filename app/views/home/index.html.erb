@@ -1,6 +1,6 @@
 <%= render 'shared/header' %>
 
-<div class="container mx-auto">
+<div class="container mx-auto" data-testid="home-container">
   <%= turbo_frame_tag "schedule_calendar" do %>
     <%= render "shared/room_schedule" %>
   <% end %>
