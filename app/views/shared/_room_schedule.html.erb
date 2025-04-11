@@ -26,9 +26,9 @@
               
               <% rooms.each do |room| %>
                 <% current_time = @selected_date.to_time.change(hour: hour, min: minute.to_i) %>
-                <% booking = room.bookings.where("start_time <= ? AND end_time > ?", current_time, current_time).first %>
+                <% booking = @bookings[room.id]&.find { |b| b.start_time <= current_time && b.end_time > current_time } %>
                 <% is_past_datetime = current_time < Time.current %>
-                <% status = if booking && !booking.check_in_expired? && !booking.complete
+                <% status = if booking && !booking.check_in_expired?
                             'unavailable'
                           else
                             'available'
@@ -37,7 +37,7 @@
                 <td class="p-2 border-r border-gray-200 last:border-r-0">
                   <% if status == 'unavailable' %>
                     <%= content_tag(:div, class: "rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4 text-center") do %>
-                      <span class="text-[#4475FF] font-medium">Unavailable</span>
+                      <div class="text-[#4475FF] font-medium">Unavailable</div>
                       <div class="text-sm text-[#4475FF] mt-1"><%= booking.user.username %></div>
                     <% end %>
                   <% else %>
@@ -49,7 +49,7 @@
                         start_time: current_time,
                         end_time: current_time + 30.minutes
                       }) do %>
-                      <span class="#{is_past_datetime ? 'text-gray-400' : 'text-[#0BA811]'} font-medium">Available</span>
+                      <div class="#{is_past_datetime ? 'text-gray-400' : 'text-[#0BA811]'} font-medium">Available</div>
                     <% end %>
                   <% end %>
                 </td>

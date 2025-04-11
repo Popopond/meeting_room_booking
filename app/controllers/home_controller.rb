@@ -6,6 +6,13 @@ class HomeController < ApplicationController
     @upcoming_bookings = current_user.bookings.upcoming.limit(5)
     @recent_bookings = current_user.bookings.past.limit(5)
 
+    # Preload bookings for the selected date
+    start_of_day = @selected_date.beginning_of_day
+    end_of_day = @selected_date.end_of_day
+    @bookings = Booking.includes(:room, :user)
+                      .where(start_time: start_of_day..end_of_day)
+                      .group_by(&:room_id)
+
     respond_to do |format|
       format.html
       format.turbo_stream do
