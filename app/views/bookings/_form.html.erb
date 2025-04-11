@@ -19,7 +19,7 @@
   <!-- User Info -->
   <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
     <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+      <div class="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center">
         <%= render "shared/icons/user" %>
       </div>
       <div>
@@ -34,22 +34,22 @@
     <h3 class="text-lg font-semibold text-gray-800 mb-4">เลือกห้องประชุม</h3>
     <div class="grid grid-cols-1 gap-4">
       <% Room.all.each do |room| %>
-        <label class="relative flex items-center p-4 bg-white border-2 rounded-lg cursor-pointer hover:border-blue-500 transition-colors duration-200 peer-checked:border-blue-500 peer-checked:bg-blue-50">
+        <label class="relative flex items-center p-4 bg-white border-2 rounded-lg cursor-pointer hover:border-violet-500 transition-colors duration-200 peer-checked:border-violet-500 peer-checked:bg-violet-50">
           <%= form.radio_button :room_id, room.id, class: "sr-only peer", checked: booking.room_id == room.id %>
           <div class="w-full">
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-3">
                 <div class="relative w-5 h-5">
-                  <div class="absolute inset-0 w-5 h-5 border-2 rounded-full peer-checked:border-blue-500 transition-colors duration-200"></div>
-                  <div class="absolute inset-0 m-1.5 w-2 h-2 rounded-full bg-blue-500 opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></div>
+                  <div class="absolute inset-0 w-5 h-5 border-2 rounded-full peer-checked:border-violet-500 transition-colors duration-200"></div>
+                  <div class="absolute inset-0 m-1.5 w-2 h-2 rounded-full bg-violet-500 opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></div>
                 </div>
                 <span class="text-lg font-semibold text-gray-800"><%= room.name %></span>
               </div>
-              <span class="px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">จุ <%= room.capacity %> คน</span>
+              <span class="px-2 py-1 text-sm bg-violet-100 text-violet-800 rounded-full">จุ <%= room.capacity %> คน</span>
             </div>
             <p class="text-sm text-gray-600"><%= room.description %></p>
           </div>
-          <div class="absolute inset-0 border-2 border-blue-500 rounded-lg opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200"></div>
+          <div class="absolute inset-0 border-2 border-violet-500 rounded-lg opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200"></div>
         </label>
       <% end %>
     </div>
@@ -65,7 +65,7 @@
         <%= form.date_field :date, 
             min: Date.current,
             value: booking.start_time&.to_date || Date.current,
-            class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+            class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500",
             data: { booking_target: "dateField" } %>
       </div>
 
@@ -76,7 +76,7 @@
           <%= form.select :start_time,
               time_options_for_select,
               { prompt: "เลือกเวลา", selected: booking.start_time&.strftime("%H:%M") },
-              { class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+              { class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500",
                 data: { booking_target: "startTime" } } %>
         </div>
 
@@ -85,7 +85,7 @@
           <%= form.select :end_time,
               time_options_for_select,
               { prompt: "เลือกเวลา", selected: booking.end_time&.strftime("%H:%M") },
-              { class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+              { class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500",
                 data: { booking_target: "endTime" } } %>
         </div>
       </div>
@@ -101,7 +101,7 @@
     <%= link_to "ยกเลิก", bookings_path, 
         class: "px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200" %>
     <%= form.submit "บันทึก", 
-        class: "px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200",
+        class: "px-6 py-3 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-colors duration-200",
         data: { 
           action: "booking#submitForm",
           disable_with: "กำลังบันทึก..." 

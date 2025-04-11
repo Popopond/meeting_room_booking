@@ -16,18 +16,18 @@
         <div>
           <%= f.label :email, "Email", class: "sr-only" %>
           <%= f.email_field :email, autofocus: true, autocomplete: "email",
-              class: "appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm",
+              class: "appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm",
               placeholder: "Email address" %>
         </div>
       </div>
 
       <div class="mt-6">
-        <%= f.submit "Send reset password instructions", class: "group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out" %>
+        <%= f.submit "Send reset password instructions", class: "group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition duration-150 ease-in-out" %>
       </div>
     <% end %>
 
     <div class="mt-6 text-center">
-      <%= link_to "Back to sign in", new_session_path(resource_name), class: "font-medium text-blue-600 hover:text-blue-500" %>
+      <%= link_to "Back to sign in", new_session_path(resource_name), class: "font-medium text-violet-600 hover:text-violet-500" %>
     </div>
   </div>
 </div>

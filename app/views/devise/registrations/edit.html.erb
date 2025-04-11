@@ -1,43 +1,109 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-8" data-testid="edit-profile-page">
+  <h2 class="text-2xl font-bold text-center mb-6" data-testid="edit-profile-title">แก้ไขโปรไฟล์</h2>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "space-y-4" }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+    <div class="flex flex-col items-center mb-6" data-testid="avatar-section">
+      <div class="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-200 flex items-center justify-center" data-testid="avatar-preview">
+        <% if resource.avatar.attached? %>
+          <%= image_tag resource.avatar, class: "w-full h-full object-cover" %>
+        <% else %>
+          <span class="text-4xl text-gray-500"><%= resource.username.first.upcase %></span>
+        <% end %>
+      </div>
+      
+      <div class="flex flex-col items-center">
+        <%= f.label :avatar, "อัพโหลดรูปโปรไฟล์", class: "text-violet-500 hover:text-violet-600 cursor-pointer" %>
+        <%= f.file_field :avatar, 
+            class: "hidden", 
+            accept: "image/*",
+            data: { 
+              controller: "avatar",
+              action: "change->avatar#preview",
+              testid: "avatar-input"
+            } %>
+      </div>
+    </div>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+    <div class="flex flex-col" data-testid="username-field">
+      <%= f.label :username, "ชื่อผู้ใช้", class: "text-gray-700 font-medium" %>
+      <%= f.text_field :username, autofocus: true, class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+    </div>
+
+    <div class="flex flex-col" data-testid="email-field">
+      <%= f.label :email, "อีเมล", class: "text-gray-700 font-medium" %>
+      <%= f.email_field :email, autocomplete: "email", class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+    </div>
+
+    <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+      <div class="text-yellow-600" data-testid="pending-confirmation">
+        กำลังรอยืนยันอีเมล: <%= resource.unconfirmed_email %>
+      </div>
+    <% end %>
+
+    <div class="flex flex-col" data-testid="password-field">
+      <%= f.label :password, "รหัสผ่านใหม่", class: "text-gray-700 font-medium" %>
+      <span class="text-sm text-gray-500">(เว้นว่างไว้ถ้าไม่ต้องการเปลี่ยน)</span>
+      <%= f.password_field :password, autocomplete: "new-password", class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+      <% if @minimum_password_length %>
+        <span class="text-sm text-gray-500">อย่างน้อย <%= @minimum_password_length %> ตัวอักษร</span>
+      <% end %>
+    </div>
+
+    <div class="flex flex-col" data-testid="password-confirmation-field">
+      <%= f.label :password_confirmation, "ยืนยันรหัสผ่านใหม่", class: "text-gray-700 font-medium" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+    </div>
+
+    <div class="flex flex-col" data-testid="current-password-field">
+      <%= f.label :current_password, "รหัสผ่านปัจจุบัน", class: "text-gray-700 font-medium" %>
+      <span class="text-sm text-gray-500">(จำเป็นต้องกรอกเพื่อยืนยันการเปลี่ยนแปลง)</span>
+      <%= f.password_field :current_password, autocomplete: "current-password", class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+    </div>
+
+    <div class="mt-6" data-testid="update-button">
+      <%= f.submit "อัพเดท", class: "w-full bg-violet-500 hover:bg-violet-600 text-white font-bold py-2 px-4 rounded-md transition duration-200" %>
+    </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
-    <% end %>
+  <div class="mt-8 border-t pt-6" data-testid="delete-account-section">
+    <h3 class="text-xl font-semibold mb-4" data-testid="delete-account-title">ลบบัญชี</h3>
+    <div class="text-center">
+      <%= button_to "ลบบัญชี", registration_path(resource_name), 
+          data: { 
+            confirm: "คุณแน่ใจหรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้", 
+            turbo_confirm: "คุณแน่ใจหรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้",
+            testid: "delete-account-button"
+          }, 
+          method: :delete,
+          class: "text-red-500 hover:text-red-700" %>
+    </div>
   </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+  <div class="mt-4 text-center">
+    <%= link_to "ย้อนกลับ", :back, class: "text-violet-500 hover:text-violet-700", data: { testid: "back-button" } %>
   </div>
+</div>
 
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
+<%= content_for :head do %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const avatarInput = document.querySelector('input[type="file"]');
+      const avatarPreview = document.querySelector('[data-testid="avatar-preview"]');
+      
+      if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              avatarPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover" />`;
+            }
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+    });
+  </script>
 <% end %>
-
-<h3>Cancel my account</h3>
-
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
-
-<%= link_to "Back", :back %>

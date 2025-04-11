@@ -7,7 +7,7 @@
       <p class="mt-2 text-sm text-gray-600" data-testid="login-subtitle">
         Or
         <%= link_to "Create new account", new_registration_path(resource_name), 
-            class: "font-medium text-blue-600 hover:text-blue-500",
+            class: "font-medium text-violet-600 hover:text-violet-500",
             data_testid: "signup-link" %>
       </p>
     </div>
@@ -18,7 +18,7 @@
         <div>
           <%= f.label :email, "Email", class: "sr-only" %>
           <%= f.email_field :email, autofocus: true, autocomplete: "email",
-              class: "appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm",
+              class: "appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm",
               placeholder: "Email address",
               data_testid: "email-input" %>
         </div>
@@ -26,7 +26,7 @@
           <%= f.label :password, "Password", class: "sr-only" %>
           <div class="relative" data-controller="password-toggle" data-testid="password-field">
             <%= f.password_field :password, autocomplete: "current-password",
-                class: "appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm pr-10",
+                class: "appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm pr-10",
                 placeholder: "Password",
                 data_testid: "password-input" %>
             <div class="absolute inset-y-0 right-0 flex items-center pr-3" 
@@ -47,7 +47,7 @@
           <div class="flex items-center space-x-3" data-testid="remember-me">
             <div class="relative flex items-start">
               <%= f.check_box :remember_me, 
-                  class: "h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer",
+                  class: "h-5 w-5 rounded border-gray-300 text-violet-600 focus:ring-violet-500 cursor-pointer",
                   data_testid: "remember-me-checkbox" %>
               <%= f.label :remember_me, "Remember me", 
                   class: "ml-3 block text-sm font-medium text-gray-700 select-none cursor-pointer",
@@ -58,14 +58,14 @@
 
         <div class="text-sm">
           <%= link_to "Forgot your password?", new_password_path(resource_name), 
-              class: "font-medium text-blue-600 hover:text-blue-500",
+              class: "font-medium text-violet-600 hover:text-violet-500",
               data_testid: "forgot-password-link" %>
         </div>
       </div>
 
       <div>
         <%= f.submit "Sign in", 
-            class: "group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+            class: "group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500",
             data_testid: "login-submit-button" %>
       </div>
     <% end %>

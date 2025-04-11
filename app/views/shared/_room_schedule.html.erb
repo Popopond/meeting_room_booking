@@ -89,10 +89,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // เพิ่ม/ลบ slot ที่เลือก
       if (this.classList.contains('selected')) {
-        this.classList.remove('selected', 'bg-blue-100', 'text-blue-800', 'border-blue-500')
+        this.classList.remove('selected', 'bg-violet-100', 'text-violet-800', 'border-violet-500')
         selectedSlots.delete(this)
       } else {
-        this.classList.add('selected', 'bg-blue-100', 'text-blue-800', 'border-blue-500')
+        this.classList.add('selected', 'bg-violet-100', 'text-violet-800', 'border-violet-500')
         selectedSlots.add(this)
         
         // ถ้าเป็น slot แรกที่เลือก ให้ตั้งค่าเวลาเริ่มต้น
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function clearSelection() {
     selectedSlots.forEach(slot => {
-      slot.classList.remove('selected', 'bg-blue-100', 'text-blue-800', 'border-blue-500')
+      slot.classList.remove('selected', 'bg-violet-100', 'text-violet-800', 'border-violet-500')
     })
     selectedSlots.clear()
     selectedRoomId = null
@@ -125,11 +125,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addEventButton) {
       if (selectedSlots.size > 0) {
         addEventButton.classList.remove('opacity-50', 'cursor-not-allowed')
-        addEventButton.classList.add('hover:bg-blue-600')
+        addEventButton.classList.add('hover:bg-violet-600')
         addEventButton.href = `/bookings/new?room_id=${selectedRoomId}&date=${selectedDate}&start_time=${selectedStartTime}&end_time=${selectedEndTime}`
       } else {
         addEventButton.classList.add('opacity-50', 'cursor-not-allowed')
-        addEventButton.classList.remove('hover:bg-blue-600')
+        addEventButton.classList.remove('hover:bg-violet-600')
         addEventButton.href = '#'
       }
     }
