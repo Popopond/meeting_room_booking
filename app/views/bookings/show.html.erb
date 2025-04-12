@@ -1,9 +1,186 @@
 <% content_for :title, "รายละเอียดการจอง" %>
 
 <div class="container mx-auto px-4 py-8">
-  <div class="bg-white rounded-lg shadow-md p-6">
+  <%= render "shared/booking_steps" %>
+
+  <div class="max-w-2xl mx-auto">
     <%= render "booking_header" %>
-    <%= render "participants_section" %>
-    <%= render "action_buttons" %>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <!-- Booking details -->
+      <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-4">รายละเอียดการจอง</h2>
+        <div class="space-y-3">
+          <div class="flex justify-between">
+            <span class="text-gray-600">รหัสยืนยัน:</span>
+            <span class="font-medium"><%= @booking.confirmation_code %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">ห้อง:</span>
+            <span class="font-medium"><%= @booking.room.name %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">วันที่:</span>
+            <span class="font-medium"><%= @booking.start_time.strftime("%d/%m/%Y") %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">เวลา:</span>
+            <span class="font-medium">
+              <%= @booking.start_time.strftime("%H:%M") %> - <%= @booking.end_time.strftime("%H:%M") %>
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">สถานะ:</span>
+            <span class="font-medium"><%= @booking.status %></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Check-in section -->
+      <% if @booking.can_check_in? %>
+        <div class="border-t pt-6">
+          <div class="bg-violet-50 rounded-lg p-4 mb-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-violet-800">เวลาเช็คอิน</h3>
+                <p class="mt-1 text-sm text-violet-600">
+                  กรุณาเช็คอินภายใน 15 นาทีหลังจากเวลาเริ่มต้น (<%= @booking.start_time.strftime("%H:%M") %>)
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <%= button_to check_in_booking_path(@booking), 
+              method: :post,
+              class: "w-full bg-violet-500 text-white py-3 px-4 rounded-lg hover:bg-violet-600 transition duration-300 flex items-center justify-center",
+              data: { turbo: false } do %>
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            เช็คอินเข้าห้องประชุม
+          <% end %>
+        </div>
+      <% elsif @booking.complete %>
+        <div class="border-t pt-6">
+          <div class="bg-green-50 rounded-lg p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-green-800">เช็คอินแล้ว</h3>
+                <p class="mt-1 text-sm text-green-600">คุณได้เช็คอินเข้าห้องประชุมเรียบร้อยแล้ว</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% elsif @booking.check_in_expired? %>
+        <div class="border-t pt-6">
+          <div class="bg-red-50 rounded-lg p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">เกินเวลาเช็คอิน</h3>
+                <p class="mt-1 text-sm text-red-600">
+                  เลยเวลาเช็คอินแล้ว การจองถูกยกเลิกโดยอัตโนมัติ
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% elsif @booking.start_time > Time.current %>
+        <div class="border-t pt-6">
+          <div class="bg-blue-50 rounded-lg p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">รอถึงเวลาเช็คอิน</h3>
+                <p class="mt-1 text-sm text-blue-600">
+                  คุณจะสามารถเช็คอินได้เมื่อถึงเวลาเริ่มต้นการจอง
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Participants section -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-lg font-semibold mb-4">ผู้เข้าร่วมประชุม</h2>
+      
+      <% if @booking.participants.any? %>
+        <div class="space-y-4 mb-6">
+          <% @booking.participants.each do |participant| %>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div class="flex items-center space-x-3">
+                <% if participant.avatar.present? %>
+                  <%= image_tag participant.avatar, class: "w-8 h-8 rounded-full" %>
+                <% else %>
+                  <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center">
+                    <%= participant.username.first.upcase %>
+                  </div>
+                <% end %>
+                <span class="font-medium"><%= participant.username %></span>
+              </div>
+              <%= button_to remove_participant_booking_path(@booking, user_id: participant.id),
+                  method: :delete,
+                  class: "text-red-500 hover:text-red-700" do %>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 mb-6">ยังไม่มีผู้เข้าร่วมประชุม</p>
+      <% end %>
+
+      <!-- Add participant form -->
+      <% if @available_users.any? %>
+        <div class="border-t pt-6">
+          <h3 class="text-md font-semibold mb-4">เพิ่มผู้เข้าร่วมประชุม</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <% @available_users.each do |user| %>
+              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                  <% if user.avatar.present? %>
+                    <%= image_tag user.avatar, class: "w-8 h-8 rounded-full" %>
+                  <% else %>
+                    <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center">
+                      <%= user.username.first.upcase %>
+                    </div>
+                  <% end %>
+                  <span class="font-medium"><%= user.username %></span>
+                </div>
+                <%= button_to add_participant_booking_path(@booking, user_id: user.id),
+                    method: :post,
+                    class: "text-violet-500 hover:text-violet-700" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>

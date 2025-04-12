@@ -1,6 +1,7 @@
 <%= render 'shared/header' %>
 
-<div class="container mx-auto" data-testid="home-container">
+<div class="container mx-auto px-4 py-8" data-testid="home-container">
+  <%= render "shared/booking_steps" %>
   <%= turbo_frame_tag "schedule_calendar" do %>
     <%= render "shared/room_schedule" %>
   <% end %>
