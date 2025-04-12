@@ -39,7 +39,7 @@ class BookingsController < ApplicationController
     respond_to do |format|
       if @booking.save
         update_room_status
-        format.html { 
+        format.html {
           flash[:success] = success_message
           redirect_to booking_url(@booking)
         }
