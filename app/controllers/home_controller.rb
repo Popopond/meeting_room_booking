@@ -1,17 +1,12 @@
 class HomeController < ApplicationController
   before_action :authenticate_user!
   before_action :set_selected_date, only: [ :index ]
+  before_action :load_bookings, only: [ :index ]
 
   def index
     @upcoming_bookings = current_user.bookings.upcoming.limit(5)
     @recent_bookings = current_user.bookings.past.limit(5)
 
-    # Preload bookings for the selected date
-    start_of_day = @selected_date.beginning_of_day
-    end_of_day = @selected_date.end_of_day
-    @bookings = Booking.includes(:room, :user)
-                      .where(start_time: start_of_day..end_of_day)
-                      .group_by(&:room_id)
 
     respond_to do |format|
       format.html
@@ -26,16 +21,32 @@ class HomeController < ApplicationController
   private
 
   def set_selected_date
-    if params[:start_date].present?
-      @start_date = Date.parse(params[:start_date])
+    # start_date
+    @start_date = if params[:start_date].present?
+      Date.parse(params[:start_date])
     else
-      @start_date = Date.today.beginning_of_week
+      Date.today
     end
 
-    if params[:date].present?
-      @selected_date = Date.parse(params[:date])
+    #  selected_date
+    @selected_date = if params[:date].present?
+      Date.parse(params[:date])
     else
-      @selected_date = @start_date
+      Date.today # change @start_date to Date.today
     end
+  end
+
+  def load_bookings
+    # use beginning_of_day and end_of_day -> selected_date
+    start_of_day = @selected_date.beginning_of_day
+    end_of_day = @selected_date.end_of_day
+
+    # โหลดการจองทั้งหมดสำหรับวันที่เลือก
+    bookings = Booking.includes(:room, :user)
+                     .where("start_time >= ? AND end_time <= ?", start_of_day, end_of_day)
+                     .or(Booking.where("start_time < ? AND end_time > ?", end_of_day, start_of_day))
+
+    # จัดกลุ่มการจองตาม room_id
+    @bookings = bookings.group_by(&:room_id)
   end
 end

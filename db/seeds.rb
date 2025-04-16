@@ -10,7 +10,7 @@
 
 # Create admin user
 admin = User.find_or_create_by!(email: 'pimpakan2545@gmail.com') do |user|
-  user.password = '123456'
+  user.password = 'admin123456'
   user.username = 'admin'
   user.role = 'admin'
 end

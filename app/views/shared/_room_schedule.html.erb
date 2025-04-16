@@ -29,17 +29,29 @@
                   </td>
                   
                   <% rooms.each do |room| %>
-                    <% current_time = @selected_date.to_time.change(hour: hour, min: minute.to_i) %>
-                    <% booking = @bookings[room.id]&.find { |b| b.start_time <= current_time && b.end_time > current_time } %>
-                    <% is_past_datetime = current_time < Time.current %>
-                    <% status = if booking && !booking.check_in_expired?
-                                'unavailable'
-                              else
-                                'available'
-                              end %>
+                    <% current_time = @selected_date.to_time.change(hour: hour, min: minute.to_i).in_time_zone('Asia/Bangkok') %>
+                    <% next_time = current_time + 30.minutes %>
+                    <% 
+                      room_bookings = @bookings[room.id] || []
+                      booking = room_bookings.find do |b|
+                        booking_start = b.start_time.in_time_zone('Asia/Bangkok')
+                        booking_end = b.end_time.in_time_zone('Asia/Bangkok')
+                        
+                        # ตรวจสอบว่าช่วงเวลาซ้อนทับกันหรือไม่
+                        # 1. ช่วงเวลาปัจจุบันเริ่มต้นระหว่างการจอง
+                        # 2. ช่วงเวลาปัจจุบันสิ้นสุดระหว่างการจอง
+                        # 3. การจองอยู่ในช่วงเวลาปัจจุบัน
+                        (current_time >= booking_start && current_time < booking_end) ||
+                        (next_time > booking_start && next_time <= booking_end) ||
+                        (booking_start >= current_time && booking_end <= next_time) ||
+                        (booking_start <= current_time && booking_end >= next_time)
+                      end
+                    %>
+                    <% is_past_datetime = current_time < Time.current.in_time_zone('Asia/Bangkok') %>
+                    <% status = booking ? 'Unavailable' : 'Available' %>
                     
                     <td class="p-2 border-r border-gray-200 last:border-r-0">
-                      <% if status == 'unavailable' %>
+                      <% if status == 'Unavailable' %>
                         <%= content_tag(:div, class: "rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4 text-center") do %>
                           <div class="text-[#4475FF] font-medium">Unavailable</div>
                           <div class="text-sm text-[#4475FF] mt-1"><%= booking.user.username %></div>
