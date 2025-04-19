@@ -24,8 +24,8 @@
                 <% next_hour = minute == "30" ? hour + 1 : hour %>
                 <% next_minute = minute == "30" ? "00" : "30" %>
                 <tr class="border-b border-gray-200">
-                  <td class="p-3 px-6 font-medium text-center border-r border-gray-200 sticky left-0 bg-white z-10">
-                    <%= "#{hour}.#{minute}-#{next_hour}.#{next_minute}" %>
+                  <td class="p-3 px-6 font-medium text-center border-r border-gray-200 sticky left-0 bg-white z-10 whitespace-nowrap">
+                    <%= "#{hour.to_s.rjust(2, '0')}:#{minute}-#{next_hour.to_s.rjust(2, '0')}:#{next_minute}" %>
                   </td>
                   
                   <% rooms.each do |room| %>
