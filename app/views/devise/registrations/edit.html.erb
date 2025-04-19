@@ -6,10 +6,10 @@
 
     <div class="flex flex-col items-center mb-6" data-testid="avatar-section">
       <div class="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-200 flex items-center justify-center" data-testid="avatar-preview">
-        <% if resource.avatar.attached? %>
-          <%= image_tag resource.avatar, class: "w-full h-full object-cover" %>
+        <% if resource.persisted? && resource.avatar.attached? %>
+          <%= image_tag resource.avatar, class: "w-full h-full object-cover", id: "current-avatar" %>
         <% else %>
-          <span class="text-4xl text-gray-500"><%= resource.username.first.upcase %></span>
+          <span class="text-4xl text-gray-500" id="initial-avatar"><%= resource.username.first.upcase %></span>
         <% end %>
       </div>
       
@@ -19,8 +19,6 @@
             class: "hidden", 
             accept: "image/*",
             data: { 
-              controller: "avatar",
-              action: "change->avatar#preview",
               testid: "avatar-input"
             } %>
       </div>
@@ -91,6 +89,8 @@
     document.addEventListener('DOMContentLoaded', function() {
       const avatarInput = document.querySelector('input[type="file"]');
       const avatarPreview = document.querySelector('[data-testid="avatar-preview"]');
+      const currentAvatar = document.getElementById('current-avatar');
+      const initialAvatar = document.getElementById('initial-avatar');
       
       if (avatarInput && avatarPreview) {
         avatarInput.addEventListener('change', function(e) {
@@ -98,7 +98,18 @@
           if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-              avatarPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover" />`;
+              // Create new image element
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.className = 'w-full h-full object-cover';
+              
+              // Remove existing content
+              if (currentAvatar) currentAvatar.remove();
+              if (initialAvatar) initialAvatar.remove();
+              
+              // Add new preview
+              avatarPreview.innerHTML = '';
+              avatarPreview.appendChild(img);
             }
             reader.readAsDataURL(file);
           }
