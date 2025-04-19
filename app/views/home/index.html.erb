@@ -1,10 +1,58 @@
-<%= render 'shared/header' %>
+<div class="min-h-screen bg-white">
+  <%= render 'shared/header' %>
 
-<div class="container mx-auto px-4 py-8" data-testid="home-container">
-  <%= turbo_frame_tag "schedule_calendar" do %>
-    <%= render "shared/room_schedule" %>
-  <% end %>
-  <%= render "shared/welcome" %>
-  <%= render "shared/bookings" %>
-  <%= render "shared/action_button" %>
+  <div class="container mx-auto px-4 py-4">
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <%= turbo_frame_tag "schedule_calendar" do %>
+          <%= render "shared/room_schedule" %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Recent Bookings -->
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">การจองล่าสุด</h2>
+        <%= render "shared/bookings" %>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">เมนูด่วน</h2>
+        <div class="space-y-4">
+          <%= render "shared/action_button" %>
+          
+          <!-- Additional Quick Actions -->
+          <div class="grid grid-cols-2 gap-4 mt-4">
+            <%= link_to check_ins_path, class: "flex items-center p-4 bg-violet-50 rounded-xl hover:bg-violet-100 transition-colors" do %>
+              <div class="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-medium text-gray-800">เช็คอิน</h3>
+                <p class="text-sm text-gray-600">สำหรับการจองวันนี้</p>
+              </div>
+            <% end %>
+
+            <%= link_to bookings_path, class: "flex items-center p-4 bg-violet-50 rounded-xl hover:bg-violet-100 transition-colors" do %>
+              <div class="w-10 h-10 bg-violet-100 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-medium text-gray-800">ประวัติการจอง</h3>
+                <p class="text-sm text-gray-600">ดูการจองทั้งหมด</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

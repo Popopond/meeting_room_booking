@@ -35,7 +35,7 @@ class Booking < ApplicationRecord
     elsif check_in_expired?
       "ยกเลิกการจอง"
     else
-      "รอยืนยันการจอง"
+      "รอเช็คอิน"
     end
   end
 

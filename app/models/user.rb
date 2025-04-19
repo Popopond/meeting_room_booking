@@ -29,9 +29,9 @@ class User < ApplicationRecord
     private
 
     def password_complexity
-      return if password.blank? || password =~ /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+      return if password.blank? || password =~ /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/
 
-      errors.add :password, "ต้องมีอย่างน้อย 8 ตัวอักษร ประกอบด้วยตัวอักษรและตัวเลขอย่างน้อย 1 ตัว"
+      errors.add :password, "ต้องมีอย่างน้อย 8 ตัวอักษร และต้องประกอบด้วยตัวพิมพ์เล็ก (a-z), ตัวพิมพ์ใหญ่ (A-Z), และตัวเลข (0-9)"
     end
 
     def avatar_size

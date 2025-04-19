@@ -1,10 +1,10 @@
 <nav class="fixed top-0 z-50 w-full bg-gray-900 backdrop-blur-lg bg-opacity-80 border-b border-[#1F1F1F]">
   <div class="container mx-auto">
-    <div class="flex items-center justify-between h-20 px-4">
+    <div class="flex items-center justify-between h-20 px-8">
       <!-- Logo -->
-      <a href="<%= root_path %>" class="flex items-center space-x-3 group">
+      <a href="<%= root_path %>" class="flex items-center space-x-8 group pl-4">
         <%= render 'icon/logo', class: "w-12 h-12 text-white opacity-90 group-hover:opacity-100 transition-opacity" %>
-        <span class="text-lg font-semibold tracking-wide text-white opacity-90 group-hover:opacity-100 transition-opacity">SYNC</span>
+        <span class="text-lg font-semibold tracking-wide text-white opacity-90 group-hover:opacity-100 transition-opacity whitespace-nowrap mr-4">SYNC</span>
       </a>
 
       <!-- Navigation -->
@@ -32,7 +32,7 @@
       </div>
 
       <!-- Profile/Auth -->
-      <div class="flex items-center space-x-6">
+      <div class="flex items-center space-x-6 pr-4">
         <% if user_signed_in? %>
           <div class="flex items-center space-x-5">
             <%= link_to edit_user_registration_path, class: "flex items-center" do %>

@@ -16,58 +16,33 @@
                 end
 
   steps = [
-    { number: 1, title: "เลือกช่วงเวลาที่ต้องการจอง" },
-    { number: 2, title: "กดปุ่มจองห้องประชุม" },
-    { number: 3, title: "ตรวจสอบรายละเอียด" },
-    { number: 4, title: "เช็คอินเมื่อถึงเวลา" }
+    { number: 1, text: 'เลือกช่วงเวลา', active: current_step == 1 },
+    { number: 2, text: 'กลุ่มห้อง', active: current_step == 2 },
+    { number: 3, text: 'รายละเอียด', active: current_step == 3 },
+    { number: 4, text: 'เช็คอิน', active: current_step == 4 }
   ]
 %>
 
-<!-- MUI-Style Stepper with Tailwind -->
-<div class="w-full max-w-[800px] mx-auto font-['Roboto']">
-  <!-- Steps container -->
-  <div class="flex justify-between px-4 relative">
-    <!-- Progress line container - Positioned below circles -->
-    <div class="absolute bottom-[22px] left-[15%] right-[15%] h-[2px] bg-gray-300">
-      <!-- Progress line -->
-      <div 
-        class="absolute h-[2px] bg-blue-600 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]" 
-        style="width: <%= ((current_step - 1) / (steps.size - 1).to_f * 100).to_i %>%"
-      ></div>
-    </div>
-
-    <% steps.each do |step| %>
-      <div class="flex flex-col items-center relative flex-1 px-2">
-        <!-- Step circle -->
-        <div class="
-          w-6 h-6 rounded-full 
-          <%= step[:number] < current_step ? 'bg-blue-600' : '' %>
-          <%= step[:number] == current_step ? 'bg-blue-600' : '' %>
-          <%= step[:number] > current_step ? 'bg-gray-300' : '' %>
-          flex items-center justify-center 
-          mb-2
-          <%= step[:number] <= current_step ? 'text-white' : 'text-gray-500' %>
-          text-xs font-medium
-          relative z-10
-        ">
-          <% if step[:number] < current_step %>
-            <!-- Check icon for completed steps -->
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor"/>
-            </svg>
-          <% else %>
-            <!-- Step number -->
-            <%= step[:number] %>
+<div class="w-full py-2">
+  <div class="flex">
+    <% steps.each_with_index do |step, index| %>
+      <div class="flex-1">
+        <div class="relative mb-1">
+          <% if index > 0 %>
+            <div class="absolute flex align-center items-center align-middle content-center" style="width: calc(100% - 1.5rem - 0.5rem); top: 50%; transform: translate(-50%, -50%)">
+              <div class="w-full bg-gray-200 rounded items-center align-middle align-center flex-1">
+                <div class="w-0 bg-violet-300 py-[2px] rounded <%= step[:active] ? 'w-full' : '' %> <%= steps[index-1][:active] ? 'w-full' : '' %>" style="transition: width 0.5s ease-in-out;"></div>
+              </div>
+            </div>
           <% end %>
+
+          <div class="w-6 h-6 mx-auto <%= step[:active] ? 'bg-violet-500' : 'bg-gray-200' %> rounded-full text-xs text-white flex items-center">
+            <span class="text-center w-full font-medium"><%= step[:number] %></span>
+          </div>
         </div>
-        
-        <!-- Step label -->
-        <div class="
-          text-sm text-center 
-          <%= step[:number] <= current_step ? 'text-gray-900 font-medium' : 'text-gray-500 font-normal' %>
-          whitespace-nowrap
-        ">
-          <%= step[:title] %>
+
+        <div class="text-[10px] text-center <%= step[:active] ? 'text-violet-500 font-medium' : 'text-gray-600' %>">
+          <%= step[:text] %>
         </div>
       </div>
     <% end %>

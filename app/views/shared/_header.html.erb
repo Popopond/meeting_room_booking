@@ -1,8 +1,9 @@
 <div class="flex items-center justify-between px-8 py-4">
   <!-- Left: Title and Date -->
   <div class="flex flex-col">
-    <h1 class="text-2xl font-bold text-black" data-testid="header-title">Meeting Room Booking</h1>
-    <div class="text-lg text-gray-700 mt-1" data-date-selector-target="monthDisplay" data-testid="month-display">
+          <%= render "shared/welcome" %>
+<!--    <h1 class="text-2xl font-bold text-black" data-testid="header-title">Meeting Room Booking</h1>
+-->    <div class="text-lg text-gray-700 mt-1 text-center" data-date-selector-target="monthDisplay" data-testid="month-display">
       <%= @start_date&.strftime("%-d %B %Y").gsub(/April/, 'เมษายน') || Date.current.strftime("%-d %B %Y").gsub(/April/, 'เมษายน') %>
     </div>
   </div>
