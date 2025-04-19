@@ -1,21 +1,25 @@
-<div class="flex justify-between items-center py-4 px-6" data-controller="date-selector" data-testid="header">
-  <div class="flex items-center gap-4">
+<div class="flex items-center justify-between px-8 py-4">
+  <!-- Left: Title and Date -->
+  <div class="flex items-center space-x-4">
     <h1 class="text-2xl font-bold text-black" data-testid="header-title">Meeting Room Booking</h1>
     <div class="text-lg text-gray-700" data-date-selector-target="monthDisplay" data-testid="month-display">
       <%= @start_date&.strftime("%B %Y") || Date.current.strftime("%B %Y") %>
     </div>
   </div>
-  <div class="flex items-center gap-3">
-    <button class="h-10 px-4 rounded-[20px] border border-gray-700 bg-[#1A1A1A] text-white shadow-[0_2px_4px_rgba(0,0,0,0.2)] flex items-center gap-2 hover:bg-[#242424] transition-colors" data-testid="week-view-button">
-      <%= render "shared/icons/week_view" %>
-      Week View
-    </button>
+
+  <!-- Center: Booking Steps -->
+  <div class="flex-1 flex justify-center">
+    <%= render "shared/booking_steps" %>
+  </div>
+
+  <!-- Right: Actions -->
+  <div class="flex items-center space-x-4">
     <%= link_to "#", 
-        class: "h-10 px-4 rounded-[20px] bg-violet-600 text-white flex items-center gap-2 opacity-50 cursor-not-allowed add-event-button hover:bg-violet-700 transition-colors", 
+        class: "h-10 px-6 rounded-xl bg-violet-600 text-white flex items-center gap-2 opacity-50 cursor-not-allowed add-event-button hover:bg-violet-700 transition-colors shadow-sm", 
         data: { turbo: false },
         data_testid: "add-event-button" do %>
       <%= render "shared/icons/add_event" %>
-      Add Event
+      จองห้องประชุม
     <% end %>
   </div>
 </div> 
