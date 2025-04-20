@@ -5,4 +5,4 @@ FactoryBot.define do
     end_time { Time.current + 1.hour }
     complete { false }
   end
-end 
+end

@@ -1,16 +1,41 @@
-# Exported from Render on 2025-04-08T02:12:34Z
+# Exported from Render on 2025-04-20T16:30:32Z
 services:
 - type: web
-  name: meeting_room_booking
+  name: oddsync-dev
   runtime: docker
   repo: https://github.com/Popopond/meeting_room_booking
   plan: free
   envVars:
-  - key: RAILS_MASTER_KEY
+  - key: CLOUDINARY_CLOUD_NAME
+    sync: false
+  - key: CLOUDINARY_API_SECRET
+    sync: false
+  - key: CLOUDINARY_API_KEY
+    sync: false
+  - key: GMAIL_APP_PASSWORD
+    sync: false
+  - key: GMAIL_USERNAME
     sync: false
   - key: WEB_CONCURRENCY
+    sync: false
+  - key: RAILS_ENV
+    sync: false
+  - key: DATABASE_URL
+    sync: false
+  - key: POSTGRES_PASSWORD
+    sync: false
+  - key: POSTGRES_PORT
+    sync: false
+  - key: POSTGRES_USER
+    sync: false
+  - key: POSTGRES_HOST
+    sync: false
+  - key: SECRET_KEY_BASE
+    sync: false
+  - key: RAILS_MASTER_KEY
     sync: false
   region: oregon
   dockerContext: .
   dockerfilePath: ./Dockerfile
+  autoDeploy: false
 version: "1"
