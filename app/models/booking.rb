@@ -139,7 +139,7 @@ class Booking < ApplicationRecord
 
     # จัดเรียงช่วงเวลาตาม start_time
     sorted_slots = booking_slots.sort_by(&:start_time)
-    
+
     # ตรวจสอบการจองที่ซ้ำซ้อนสำหรับแต่ละช่วงเวลา
     sorted_slots.each do |slot|
       overlapping_slots = BookingSlot

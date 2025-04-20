@@ -44,7 +44,7 @@ FactoryBot.define do
       after(:build) do |booking, evaluator|
         # Clear any existing slots
         booking.booking_slots.clear
-        
+
         # Create sequential slots
         evaluator.slots_count.times do |i|
           booking.booking_slots << build(:booking_slot,
@@ -56,4 +56,4 @@ FactoryBot.define do
       end
     end
   end
-end 
+end

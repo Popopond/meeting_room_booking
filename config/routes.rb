@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   end
   resources :statuses
   resources :rooms do
-    resource :qr_code, controller: "room_qr_codes", only: [:show]
+    resource :qr_code, controller: "room_qr_codes", only: [ :show ]
     get "qr_code/image", to: "room_qr_codes#image", as: "qr_code_image"
   end
   resources :users
