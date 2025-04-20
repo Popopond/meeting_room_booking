@@ -1,5 +1,7 @@
 class RoomsController < ApplicationController
   include AdminAuthenticatable
+  skip_before_action :authenticate_admin!, only: [ :show ]
+  skip_before_action :authenticate_user!, only: [ :show ]
   before_action :set_room, only: %i[ show edit update destroy ]
 
   # GET /rooms or /rooms.json
@@ -9,6 +11,8 @@ class RoomsController < ApplicationController
 
   # GET /rooms/1 or /rooms/1.json
   def show
+    # Check if the request is coming from QR code page
+    @is_qr_view = request.referer&.include?("/qr_code")
   end
 
   # GET /rooms/new
@@ -61,11 +65,11 @@ class RoomsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_room
-      @room = Room.find(params.expect(:id))
+      @room = Room.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def room_params
-      params.expect(room: [ :name, :capacity, :description, :status_id ])
+      params.require(:room).permit(:name, :capacity, :description, :status_id)
     end
 end
