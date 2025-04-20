@@ -9,7 +9,7 @@ class BookingSlot < ApplicationRecord
 
   def end_time_after_start_time
     return if end_time.blank? || start_time.blank?
-    
+
     if end_time <= start_time
       errors.add(:end_time, "ต้องมากกว่าเวลาที่เริ่มจอง")
     end
@@ -26,4 +26,4 @@ class BookingSlot < ApplicationRecord
       errors.add(:base, "ช่วงเวลานี้ซ้ำซ้อนกับช่วงเวลาอื่นในการจองเดียวกัน")
     end
   end
-end 
+end

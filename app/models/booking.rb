@@ -17,7 +17,7 @@ class Booking < ApplicationRecord
 
   scope :upcoming, -> { joins(:booking_slots).where("booking_slots.start_time > ?", Time.current).distinct.order("booking_slots.start_time ASC") }
   scope :past, -> { joins(:booking_slots).where("booking_slots.end_time < ?", Time.current).distinct.order("booking_slots.start_time DESC") }
-  scope :current, -> { 
+  scope :current, -> {
     joins(:booking_slots)
       .where("booking_slots.start_time <= ? AND booking_slots.end_time > ?", Time.current, Time.current)
       .distinct
@@ -63,7 +63,7 @@ class Booking < ApplicationRecord
     return false if complete || check_in.present?
 
     current_time = Time.zone.now
-    
+
     # Find the next available slot for check-in
     next_slot = booking_slots.order(start_time: :asc).find do |slot|
       slot_start = slot.start_time.in_time_zone
@@ -76,7 +76,7 @@ class Booking < ApplicationRecord
 
   def current_or_next_slot
     current_time = Time.zone.now
-    
+
     booking_slots.order(start_time: :asc).find do |slot|
       slot_start = slot.start_time.in_time_zone
       slot_check_in_deadline = slot_start + 15.minutes
@@ -95,7 +95,7 @@ class Booking < ApplicationRecord
         user: current_user,
         booking_slot: slot
       )
-      
+
       if check_in.save
         # Mark only this slot as complete
         slot.update!(complete: true)

@@ -27,10 +27,10 @@ class BookingsController < ApplicationController
 
   def new
     @booking = current_user.bookings.build
-    
+
     if params[:room_id].present? && params[:date].present? && params[:slots].present?
       @booking.room_id = params[:room_id]
-      
+
       params[:slots].each do |_, slot_params|
         start_time = Time.zone.parse("#{params[:date]} #{slot_params[:start_time]}")
         end_time = Time.zone.parse("#{params[:date]} #{slot_params[:end_time]}")
@@ -48,7 +48,7 @@ class BookingsController < ApplicationController
 
   def create
     @booking = current_user.bookings.build(booking_params.except(:booking_slots_attributes))
-    
+
     if params[:booking][:booking_slots_attributes].present?
       # Sort slots by start time and group continuous slots
       slots = params[:booking][:booking_slots_attributes].values.map do |slot_params|
@@ -71,7 +71,7 @@ class BookingsController < ApplicationController
             end_time: current_group.last[:end_time]
           )
           # Start new group
-          current_group = [slot]
+          current_group = [ slot ]
         end
       end
 
@@ -183,7 +183,7 @@ class BookingsController < ApplicationController
       :room_id,
       :title,
       :description,
-      booking_slots_attributes: [:id, :start_time, :end_time, :_destroy]
+      booking_slots_attributes: [ :id, :start_time, :end_time, :_destroy ]
     )
   end
 

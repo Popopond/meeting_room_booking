@@ -10,9 +10,9 @@ class RegistrationsController < Devise::RegistrationsController
       params.delete(:password)
       params.delete(:password_confirmation)
       params.delete(:current_password)
-      
+
       # Update without password
       resource.update_without_password(params)
     end
   end
-end 
+end

@@ -22,9 +22,9 @@ RSpec.describe CheckIn, type: :model do
     end
 
     it 'validates check_in_time_valid' do
-      check_in.booking.start_time = Time.current + 1.hour
+      check_in.booking_slot.start_time = Time.current + 1.hour
       expect(check_in).not_to be_valid
-      expect(check_in.errors[:base]).to include("ยังไม่ถึงเวลาที่สามารถเช็คอินได้ (เช็คอินได้ตั้งแต่ #{check_in.booking.start_time.strftime("%H:%M")})")
+      expect(check_in.errors[:base]).to include("ยังไม่ถึงเวลาที่สามารถเช็คอินได้ (เช็คอินได้ตั้งแต่ #{check_in.booking_slot.start_time.strftime("%H:%M")})")
     end
   end
 

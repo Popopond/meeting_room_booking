@@ -7,18 +7,18 @@ class HomeController < ApplicationController
     @upcoming_bookings = current_user.bookings
                                    .includes(:room, :booking_slots)
                                    .joins(:booking_slots)
-                                   .where('booking_slots.start_time > ?', Time.current)
+                                   .where("booking_slots.start_time > ?", Time.current)
                                    .distinct
                                    .limit(5)
-                                   .order('booking_slots.start_time ASC')
+                                   .order("booking_slots.start_time ASC")
 
     @recent_bookings = current_user.bookings
                                  .includes(:room, :booking_slots)
                                  .joins(:booking_slots)
-                                 .where('booking_slots.end_time < ?', Time.current)
+                                 .where("booking_slots.end_time < ?", Time.current)
                                  .distinct
                                  .limit(5)
-                                 .order('booking_slots.start_time DESC')
+                                 .order("booking_slots.start_time DESC")
 
     respond_to do |format|
       format.html
@@ -60,7 +60,7 @@ class HomeController < ApplicationController
                      .or(
                        Booking.includes(:room, :user, :booking_slots)
                              .joins(:booking_slots)
-                             .where('booking_slots.start_time < ? AND booking_slots.end_time > ?', end_of_day, start_of_day)
+                             .where("booking_slots.start_time < ? AND booking_slots.end_time > ?", end_of_day, start_of_day)
                      )
 
     # จัดกลุ่มการจองตาม room_id
