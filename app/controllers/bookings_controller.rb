@@ -4,15 +4,22 @@ class BookingsController < ApplicationController
 
   def index
     @bookings = if current_user.role == "admin"
-      Booking.includes(:room, :user).order(start_time: :desc)
+      Booking.includes(:room, :user, :booking_slots)
+            .joins(:booking_slots)
+            .order("booking_slots.start_time DESC")
+            .distinct
     else
-      current_user.bookings.includes(:room).order(start_time: :desc)
+      current_user.bookings
+                 .includes(:room, :booking_slots)
+                 .joins(:booking_slots)
+                 .order("booking_slots.start_time DESC")
+                 .distinct
     end
     flash.now[:notice] = "ยังไม่มีการจองห้องประชุม" if @bookings.empty?
   end
 
   def show
-    @booking = Booking.find(params[:id])
+    @booking = Booking.includes(:booking_slots).find(params[:id])
     @available_users = User.exclude_user(@booking.user)
                           .where.not(id: @booking.participants.pluck(:id))
                           .select(:id, :username, :avatar)
@@ -20,11 +27,17 @@ class BookingsController < ApplicationController
 
   def new
     @booking = current_user.bookings.build
-
-    if params[:room_id].present? && params[:date].present? && params[:start_time].present? && params[:end_time].present?
+    
+    if params[:room_id].present? && params[:date].present? && params[:slots].present?
       @booking.room_id = params[:room_id]
-      @booking.start_time = Time.zone.parse(params[:start_time])
-      @booking.end_time = Time.zone.parse(params[:end_time])
+      
+      params[:slots].each do |_, slot_params|
+        start_time = Time.zone.parse("#{params[:date]} #{slot_params[:start_time]}")
+        end_time = Time.zone.parse("#{params[:date]} #{slot_params[:end_time]}")
+        @booking.booking_slots.build(start_time: start_time, end_time: end_time)
+      end
+    else
+      @booking.booking_slots.build # Build at least one slot
     end
 
     @rooms = Room.all
@@ -34,7 +47,42 @@ class BookingsController < ApplicationController
   end
 
   def create
-    @booking = current_user.bookings.build(booking_params)
+    @booking = current_user.bookings.build(booking_params.except(:booking_slots_attributes))
+    
+    if params[:booking][:booking_slots_attributes].present?
+      # Sort slots by start time and group continuous slots
+      slots = params[:booking][:booking_slots_attributes].values.map do |slot_params|
+        date = Date.parse(slot_params[:date])
+        {
+          start_time: Time.zone.parse("#{date} #{slot_params[:start_time]}"),
+          end_time: Time.zone.parse("#{date} #{slot_params[:end_time]}")
+        }
+      end.sort_by { |slot| slot[:start_time] }
+
+      # Group continuous slots
+      current_group = []
+      slots.each do |slot|
+        if current_group.empty? || current_group.last[:end_time] == slot[:start_time]
+          current_group << slot
+        else
+          # Create booking slot for the previous group
+          @booking.booking_slots.build(
+            start_time: current_group.first[:start_time],
+            end_time: current_group.last[:end_time]
+          )
+          # Start new group
+          current_group = [slot]
+        end
+      end
+
+      # Don't forget to create booking slot for the last group
+      if current_group.any?
+        @booking.booking_slots.build(
+          start_time: current_group.first[:start_time],
+          end_time: current_group.last[:end_time]
+        )
+      end
+    end
 
     respond_to do |format|
       if @booking.save
@@ -131,17 +179,11 @@ class BookingsController < ApplicationController
   end
 
   def booking_params
-    date = params[:booking][:date]
-    start_time = params[:booking][:start_time]
-    end_time = params[:booking][:end_time]
-
-    # Combine date and time into datetime
-    start_datetime = Time.zone.parse("#{date} #{start_time}")
-    end_datetime = Time.zone.parse("#{date} #{end_time}")
-
-    params.require(:booking).permit(:room_id).merge(
-      start_time: start_datetime,
-      end_time: end_datetime
+    params.require(:booking).permit(
+      :room_id,
+      :title,
+      :description,
+      booking_slots_attributes: [:id, :start_time, :end_time, :_destroy]
     )
   end
 

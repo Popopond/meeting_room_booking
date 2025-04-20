@@ -55,38 +55,108 @@
     </div>
   </div>
 
-  <!-- Date and Time Selection -->
+  <!-- Meeting Details -->
   <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4">กำหนดวันและเวลา</h3>
-    <div class="grid grid-cols-1 gap-6">
-      <!-- Date -->
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">รายละเอียดการประชุม</h3>
+    
+    <div class="space-y-4">
       <div>
-        <%= form.label :date, "วันที่", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.date_field :date, 
-            min: Date.current,
-            value: booking.start_time&.to_date || Date.current,
+        <label class="block text-sm font-medium text-gray-700 mb-2">หัวข้อการประชุม</label>
+        <%= form.text_field :title, 
             class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500",
-            data: { booking_target: "dateField" } %>
+            placeholder: "กรอกหัวข้อการประชุม" %>
       </div>
 
-      <!-- Time Selection -->
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <%= form.label :start_time, "เวลาเริ่มต้น", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= form.select :start_time,
-              time_options_for_select,
-              { prompt: "เลือกเวลา", selected: booking.start_time&.strftime("%H:%M") },
-              { class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500",
-                data: { booking_target: "startTime" } } %>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">รายละเอียด</label>
+        <%= form.text_area :description, 
+            class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500",
+            rows: 4,
+            placeholder: "กรอกรายละเอียดการประชุม" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time Slots -->
+  <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">กำหนดวันและเวลา</h3>
+    
+    <!-- Time Slots Summary -->
+    <div id="time-slots-summary" class="bg-white rounded-lg border border-gray-200">
+      <h4 class="font-medium text-violet-700 p-4 border-b border-gray-200">สรุปช่วงเวลาที่จอง</h4>
+      <div id="grouped-slots" class="p-4 space-y-3"></div>
+    </div>
+
+    <!-- Add Slot Button -->
+    <div class="mt-4">
+      <button type="button" id="add-slot-button" class="w-full py-2 px-4 border border-violet-500 text-violet-500 rounded-lg hover:bg-violet-50">
+        + เพิ่มช่วงเวลา
+      </button>
+    </div>
+  </div>
+
+  <!-- Hidden Time Slots Container -->
+  <div id="booking-slots" class="hidden">
+    <%= form.fields_for :booking_slots do |slot_form| %>
+      <div class="booking-slot-fields">
+        <%= slot_form.date_field :date, 
+            min: Date.current,
+            value: slot_form.object.start_time&.to_date || params[:date] || Date.current %>
+        <%= slot_form.select :start_time,
+            time_options_for_select,
+            { prompt: "เลือกเวลา", selected: slot_form.object.start_time&.strftime("%H:%M") || params.dig(:slots, slot_form.index.to_s, :start_time) } %>
+        <%= slot_form.select :end_time,
+            time_options_for_select,
+            { prompt: "เลือกเวลา", selected: slot_form.object.end_time&.strftime("%H:%M") || params.dig(:slots, slot_form.index.to_s, :end_time) } %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Time Slot Picker Modal -->
+  <div id="time-slot-picker" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+      <div class="p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">เลือกช่วงเวลา</h3>
+        
+        <!-- Date Input -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">วันที่</label>
+          <input type="date" id="modal-date" 
+                 class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                 min="<%= Date.current %>" value="<%= params[:date] || Date.current %>">
         </div>
 
-        <div>
-          <%= form.label :end_time, "เวลาสิ้นสุด", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= form.select :end_time,
-              time_options_for_select,
-              { prompt: "เลือกเวลา", selected: booking.end_time&.strftime("%H:%M") },
-              { class: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500",
-                data: { booking_target: "endTime" } } %>
+        <!-- Time Selection -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">เวลาเริ่มต้น</label>
+            <select id="modal-start-time"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+              <option value="">เลือกเวลา</option>
+              <%= options_for_select(time_options_for_select) %>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">เวลาสิ้นสุด</label>
+            <select id="modal-end-time"
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+              <option value="">เลือกเวลา</option>
+              <%= options_for_select(time_options_for_select) %>
+            </select>
+          </div>
+        </div>
+
+        <!-- Modal Buttons -->
+        <div class="flex justify-end space-x-3">
+          <button type="button" id="cancel-time-slot" 
+                  class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+            ยกเลิก
+          </button>
+          <button type="button" id="confirm-time-slot"
+                  class="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700">
+            ยืนยัน
+          </button>
         </div>
       </div>
     </div>
@@ -108,3 +178,159 @@
         } %>
   </div>
 <% end %>
+
+<template id="booking-slot-template">
+  <div class="booking-slot-fields">
+    <input type="date" name="booking[booking_slots_attributes][INDEX][date]"
+           min="<%= Date.current %>" value="<%= params[:date] || Date.current %>">
+    <select name="booking[booking_slots_attributes][INDEX][start_time]">
+      <option value="">เลือกเวลา</option>
+      <%= options_for_select(time_options_for_select) %>
+    </select>
+    <select name="booking[booking_slots_attributes][INDEX][end_time]">
+      <option value="">เลือกเวลา</option>
+      <%= options_for_select(time_options_for_select) %>
+    </select>
+  </div>
+</template>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const bookingSlots = document.getElementById('booking-slots');
+  const addSlotButton = document.getElementById('add-slot-button');
+  const slotTemplate = document.getElementById('booking-slot-template');
+  const timeSlotsSummary = document.getElementById('time-slots-summary');
+  const groupedSlots = document.getElementById('grouped-slots');
+  const timeSlotPicker = document.getElementById('time-slot-picker');
+  const modalDate = document.getElementById('modal-date');
+  const modalStartTime = document.getElementById('modal-start-time');
+  const modalEndTime = document.getElementById('modal-end-time');
+  const confirmTimeSlot = document.getElementById('confirm-time-slot');
+  const cancelTimeSlot = document.getElementById('cancel-time-slot');
+  let slotIndex = <%= booking.booking_slots.size %>;
+  let currentSlotFields = null;
+
+  function showTimeSlotPicker() {
+    timeSlotPicker.classList.remove('hidden');
+    modalDate.value = '';
+    modalStartTime.value = '';
+    modalEndTime.value = '';
+  }
+
+  function hideTimeSlotPicker() {
+    timeSlotPicker.classList.add('hidden');
+  }
+
+  function updateTimeSlotsSummary() {
+    const slots = [];
+    document.querySelectorAll('.booking-slot-fields').forEach(field => {
+      const date = field.querySelector('[name*="[date]"]').value;
+      const startTime = field.querySelector('[name*="[start_time]"]').value;
+      const endTime = field.querySelector('[name*="[end_time]"]').value;
+      
+      if (date && startTime && endTime) {
+        slots.push({ date, startTime, endTime });
+      }
+    });
+
+    if (slots.length > 0) {
+      // Sort slots by date and time
+      slots.sort((a, b) => {
+        const dateA = new Date(`${a.date} ${a.startTime}`);
+        const dateB = new Date(`${b.date} ${b.startTime}`);
+        return dateA - dateB;
+      });
+
+      // Group continuous slots
+      const groups = [];
+      let currentGroup = [slots[0]];
+
+      for (let i = 1; i < slots.length; i++) {
+        const prevSlot = slots[i - 1];
+        const currentSlot = slots[i];
+
+        if (prevSlot.date === currentSlot.date && prevSlot.endTime === currentSlot.startTime) {
+          currentGroup.push(currentSlot);
+        } else {
+          groups.push([...currentGroup]);
+          currentGroup = [currentSlot];
+        }
+      }
+      groups.push(currentGroup);
+
+      // Display grouped slots
+      groupedSlots.innerHTML = groups.map(group => {
+        const date = new Date(group[0].date).toLocaleDateString('th-TH', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        return `<div class="bg-violet-50 p-3 rounded-lg border border-violet-200">
+          <div class="text-violet-700 font-medium">${date}</div>
+          <div class="text-violet-600 mt-1">${group[0].startTime} - ${group[group.length - 1].endTime}</div>
+          <button type="button" class="remove-slot-button mt-2 text-sm text-red-500 hover:text-red-700">
+            ลบช่วงเวลานี้
+          </button>
+        </div>`;
+      }).join('');
+    } else {
+      groupedSlots.innerHTML = '<div class="text-gray-500 text-center">ยังไม่ได้เลือกช่วงเวลา</div>';
+    }
+  }
+
+  // Add new slot
+  addSlotButton.addEventListener('click', function() {
+    const newSlot = slotTemplate.content.cloneNode(true);
+    const fields = newSlot.querySelectorAll('[name*="INDEX"]');
+    
+    fields.forEach(field => {
+      field.name = field.name.replace('INDEX', slotIndex);
+    });
+
+    currentSlotFields = newSlot;
+    showTimeSlotPicker();
+  });
+
+  // Confirm time slot selection
+  confirmTimeSlot.addEventListener('click', function() {
+    if (currentSlotFields && modalDate.value && modalStartTime.value && modalEndTime.value) {
+      const dateField = currentSlotFields.querySelector('[name*="[date]"]');
+      const startTimeField = currentSlotFields.querySelector('[name*="[start_time]"]');
+      const endTimeField = currentSlotFields.querySelector('[name*="[end_time]"]');
+
+      dateField.value = modalDate.value;
+      startTimeField.value = modalStartTime.value;
+      endTimeField.value = modalEndTime.value;
+
+      bookingSlots.appendChild(currentSlotFields);
+      slotIndex++;
+      currentSlotFields = null;
+      hideTimeSlotPicker();
+      updateTimeSlotsSummary();
+    }
+  });
+
+  // Cancel time slot selection
+  cancelTimeSlot.addEventListener('click', hideTimeSlotPicker);
+
+  // Remove slot
+  groupedSlots.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-slot-button')) {
+      const slotCard = e.target.closest('.bg-violet-50');
+      const index = Array.from(groupedSlots.children).indexOf(slotCard);
+      
+      if (index !== -1) {
+        const slotField = bookingSlots.children[index];
+        if (slotField) {
+          slotField.remove();
+          updateTimeSlotsSummary();
+        }
+      }
+    }
+  });
+
+  // Initialize summary
+  updateTimeSlotsSummary();
+});
+</script>

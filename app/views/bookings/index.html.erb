@@ -15,8 +15,13 @@
             <% if current_user.role == 'admin' %>
               <p class="text-gray-600">ผู้จอง: <%= booking.user.username %> (<%= booking.user.email %>)</p>
             <% end %>
-            <p class="text-gray-600">วันที่: <%= booking.start_time.strftime("%d/%m/%Y") %></p>
-            <p class="text-gray-600">เวลา: <%= booking.start_time.strftime("%H:%M") %> - <%= booking.end_time.strftime("%H:%M") %></p>
+            
+            <% booking.booking_slots.order(start_time: :asc).each do |slot| %>
+              <div class="mt-2">
+                <p class="text-gray-600">วันที่: <%= slot.start_time.strftime("%d/%m/%Y") %></p>
+                <p class="text-gray-600">เวลา: <%= slot.start_time.strftime("%H:%M") %> - <%= slot.end_time.strftime("%H:%M") %></p>
+              </div>
+            <% end %>
           </div>
 
           <% if booking.check_in.present? %>

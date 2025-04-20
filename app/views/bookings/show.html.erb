@@ -20,14 +20,31 @@
             <span class="font-medium"><%= @booking.room.name %></span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-600">วันที่:</span>
-            <span class="font-medium"><%= @booking.start_time.strftime("%d/%m/%Y") %></span>
+            <span class="text-gray-600">หัวข้อการประชุม:</span>
+            <span class="font-medium"><%= @booking.title %></span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-600">เวลา:</span>
-            <span class="font-medium">
-              <%= @booking.start_time.strftime("%H:%M") %> - <%= @booking.end_time.strftime("%H:%M") %>
-            </span>
+            <span class="text-gray-600">รายละเอียด:</span>
+            <span class="font-medium"><%= @booking.description %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">จำนวนผู้เข้าร่วมที่คาดว่าจะมา:</span>
+            <span class="font-medium"><%= @booking.expected_participants %> คน</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">ผู้จองการประชุม:</span>
+            <span class="font-medium"><%= @booking.user.username %></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">ช่วงเวลาที่จอง:</span>
+          </div>
+          <div class="space-y-2 pl-4">
+            <% @booking.booking_slots.order(start_time: :asc).each do |slot| %>
+              <div class="flex justify-between bg-gray-50 p-2 rounded">
+                <span class="text-gray-600"><%= slot.start_time.strftime("%d/%m/%Y") %></span>
+                <span class="font-medium"><%= slot.start_time.strftime("%H:%M") %> - <%= slot.end_time.strftime("%H:%M") %></span>
+              </div>
+            <% end %>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">สถานะ:</span>

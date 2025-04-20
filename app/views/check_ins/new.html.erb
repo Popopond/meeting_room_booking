@@ -1,74 +1,96 @@
 <% content_for :title, "New check in" %>
 
-<div class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-  <div class="relative py-3 sm:max-w-xl sm:mx-auto">
-    <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-      <div class="max-w-md mx-auto">
-        <% if flash[:alert] %>
-          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-            <%= flash[:alert] %>
-          </div>
-        <% end %>
+<div class="min-h-screen bg-gray-100 py-12">
+  <div class="max-w-3xl mx-auto">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="p-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">เช็คอินเข้าห้องประชุม</h1>
 
-        <% if flash[:notice] %>
-          <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
-            <%= flash[:notice] %>
-          </div>
-        <% end %>
+        <% if @booking %>
+          <div class="bg-gray-50 p-6 rounded-lg mb-6">
+            <h3 class="font-semibold text-lg mb-4">รายละเอียดการจอง:</h3>
+            <div class="space-y-3">
+              <p class="flex justify-between">
+                <span class="text-gray-600">ห้อง:</span>
+                <span class="font-medium"><%= @booking.room.name %></span>
+              </p>
 
-        <div class="divide-y divide-gray-200">
-          <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-            <h2 class="text-2xl font-bold mb-8 text-center">เช็คอินเข้าห้องประชุม</h2>
-
-            <% if @booking %>
-              <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                <h3 class="font-semibold mb-2">รายละเอียดการจอง:</h3>
-                <p>ห้อง: <%= @booking.room.name %></p>
-                <p>วันที่: <%= @booking.start_time.strftime("%d/%m/%Y") %></p>
-                <p>เวลา: <%= @booking.start_time.strftime("%H:%M") %> - <%= @booking.end_time.strftime("%H:%M") %></p>
-                <p>เวลาที่สามารถเช็คอินได้: <%= @booking.start_time.strftime("%H:%M") %> - <%= (@booking.start_time + 15.minutes).strftime("%H:%M") %></p>
-                <p>เวลาปัจจุบัน: <%= Time.zone.now.strftime("%H:%M") %></p>
-                <p>สถานะ: 
-                  <span class="<%= @booking.complete? ? 'text-green-600' : 'text-yellow-600' %> font-semibold">
-                    <%= @booking.status %>
-                  </span>
-                </p>
+              <!-- แสดงช่วงเวลาทั้งหมด -->
+              <div class="border-t border-gray-200 pt-3">
+                <h4 class="font-medium mb-2">ช่วงเวลาที่จอง:</h4>
+                <div class="space-y-2">
+                  <% @booking.booking_slots.order(start_time: :asc).each do |slot| %>
+                    <div class="flex items-center justify-between p-3 rounded-lg <%= slot.complete? ? 'bg-green-50' : (slot == @booking.current_or_next_slot ? 'bg-yellow-50' : 'bg-gray-50') %>">
+                      <div>
+                        <div class="font-medium">
+                          <%= slot.start_time.strftime("%d/%m/%Y") %>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                          <%= slot.start_time.strftime("%H:%M") %> - <%= slot.end_time.strftime("%H:%M") %>
+                        </div>
+                      </div>
+                      <div>
+                        <% if slot.complete? %>
+                          <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                            เช็คอินแล้ว
+                          </span>
+                        <% elsif slot == @booking.current_or_next_slot %>
+                          <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                            พร้อมเช็คอิน
+                          </span>
+                        <% else %>
+                          <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
+                            รอเช็คอิน
+                          </span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
               </div>
 
               <% if @booking.complete? %>
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6">
-                  <p>คุณได้เช็คอินเรียบร้อยแล้ว สามารถเข้าใช้ห้องประชุมได้</p>
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
+                  <p>เช็คอินครบทุกช่วงเวลาแล้ว</p>
                 </div>
-              <% elsif @booking.check_in_expired? %>
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-                  <p>หมดเวลาเช็คอินแล้ว (เช็คอินได้ภายใน 15 นาทีแรกของการจองเท่านั้น)</p>
+              <% elsif current_slot = @booking.current_or_next_slot %>
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
+                  <p>สามารถเช็คอินช่วงเวลา <%= current_slot.start_time.strftime("%H:%M") %> - <%= current_slot.end_time.strftime("%H:%M") %> ได้จนถึง <%= (current_slot.start_time + 15.minutes).strftime("%H:%M") %></p>
                 </div>
-              <% elsif !@booking.can_check_in? %>
-                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6">
-                  <p>ยังไม่ถึงเวลาที่สามารถเช็คอินได้ กรุณารอจนถึงเวลาเริ่มต้นการจอง</p>
+
+                <%= form_with(url: check_ins_path, method: :post, data: { turbo: false }, class: "mt-6") do |f| %>
+                  <%= f.hidden_field :confirmation_code, value: @booking.confirmation_code %>
+                  <div class="flex justify-center">
+                    <%= f.submit "ยืนยันการเช็คอิน", 
+                        class: "bg-green-500 text-white px-8 py-3 rounded-lg shadow-md hover:bg-green-600 transition duration-300 ease-in-out text-lg font-semibold" %>
+                  </div>
+                <% end %>
+              <% else %>
+                <div class="bg-gray-100 border-l-4 border-gray-500 text-gray-700 p-4">
+                  <p>ยังไม่ถึงเวลาที่สามารถเช็คอินได้</p>
                 </div>
               <% end %>
-            <% end %>
-
-            <%= form_with(url: check_ins_path, method: :post, data: { turbo: false }, class: "space-y-6") do |f| %>
-              <div>
-                <%= f.label :confirmation_code, "รหัสยืนยันการจอง", class: "block text-sm font-medium text-gray-700" %>
-                <div class="mt-1 flex rounded-md shadow-sm">
-                  <%= f.text_field :confirmation_code, 
-                      value: params[:code],
-                      class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm",
-                      placeholder: "กรอกรหัสยืนยัน 6 หลัก" %>
-                </div>
-                <p class="mt-2 text-sm text-gray-500">รหัสยืนยันจะถูกส่งไปที่อีเมลของคุณหลังจากจองห้องสำเร็จ</p>
-              </div>
-
-              <div class="flex justify-center">
-                <%= f.submit "ยืนยันการเช็คอิน", 
-                    class: "bg-green-500 text-white px-8 py-3 rounded-lg shadow-md hover:bg-green-600 transition duration-300 ease-in-out text-lg font-semibold" %>
-              </div>
-            <% end %>
+            </div>
           </div>
-        </div>
+        <% else %>
+          <%= form_with(url: check_ins_path, method: :post, data: { turbo: false }, class: "space-y-6") do |f| %>
+            <div>
+              <%= f.label :confirmation_code, "รหัสยืนยันการจอง", class: "block text-sm font-medium text-gray-700" %>
+              <div class="mt-1">
+                <%= f.text_field :confirmation_code, 
+                    value: params[:code],
+                    class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm",
+                    placeholder: "กรอกรหัสยืนยัน 6 หลัก" %>
+              </div>
+              <p class="mt-2 text-sm text-gray-500">รหัสยืนยันจะถูกส่งไปที่อีเมลของคุณหลังจากจองห้องสำเร็จ</p>
+            </div>
+
+            <div class="flex justify-center">
+              <%= f.submit "ค้นหาการจอง", 
+                  class: "bg-violet-500 text-white px-8 py-3 rounded-lg shadow-md hover:bg-violet-600 transition duration-300 ease-in-out text-lg font-semibold" %>
+            </div>
+          <% end %>
+        <% end %>
       </div>
     </div>
   </div>

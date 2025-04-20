@@ -7,7 +7,10 @@
           <li class="flex items-center justify-between p-4 bg-gray-50 rounded-lg" data-testid="upcoming-booking-item">
             <div>
               <h3 class="font-medium" data-testid="booking-room-name"><%= booking.room.name %></h3>
-              <p class="text-sm text-gray-600" data-testid="booking-time">
+              <% if booking.title.present? %>
+                <p class="text-sm text-gray-700 mt-1"><%= booking.title %></p>
+              <% end %>
+              <p class="text-sm text-gray-600 mt-1" data-testid="booking-time">
                 <%= booking.start_time.strftime("%d/%m/%Y %H:%M") %>
               </p>
             </div>
@@ -30,7 +33,10 @@
           <li class="flex items-center justify-between p-4 bg-gray-50 rounded-lg" data-testid="recent-booking-item">
             <div>
               <h3 class="font-medium" data-testid="booking-room-name"><%= booking.room.name %></h3>
-              <p class="text-sm text-gray-600" data-testid="booking-time">
+              <% if booking.title.present? %>
+                <p class="text-sm text-gray-700 mt-1"><%= booking.title %></p>
+              <% end %>
+              <p class="text-sm text-gray-600 mt-1" data-testid="booking-time">
                 <%= booking.start_time.strftime("%d/%m/%Y %H:%M") %>
               </p>
             </div>

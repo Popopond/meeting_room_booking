@@ -1,6 +1,7 @@
 class CheckIn < ApplicationRecord
   belongs_to :user
   belongs_to :booking
+  belongs_to :booking_slot
 
   validate :check_in_time_valid
 
@@ -18,10 +19,10 @@ class CheckIn < ApplicationRecord
   end
 
   def check_in_time_valid
-    return if booking.blank?
+    return if booking_slot.blank?
 
     current_time = Time.zone.now
-    start_time = booking.start_time.in_time_zone
+    start_time = booking_slot.start_time.in_time_zone
     check_in_deadline = start_time + 15.minutes
 
     if current_time < start_time
@@ -31,6 +32,11 @@ class CheckIn < ApplicationRecord
 
     if current_time > check_in_deadline
       errors.add(:base, "หมดเวลาเช็คอินแล้ว (เช็คอินได้ถึง #{check_in_deadline.strftime("%H:%M")} เท่านั้น)")
+      nil
+    end
+
+    if booking_slot.complete?
+      errors.add(:base, "ช่วงเวลานี้ถูกเช็คอินไปแล้ว")
       nil
     end
   end

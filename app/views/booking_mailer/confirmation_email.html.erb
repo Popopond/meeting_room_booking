@@ -14,8 +14,12 @@
       <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
         <ul style="list-style: none; padding: 0;">
           <li style="margin-bottom: 10px;"><strong>ห้อง:</strong> <%= @room.name %></li>
-          <li style="margin-bottom: 10px;"><strong>วันที่:</strong> <%= @booking.start_time.strftime("%d/%m/%Y") %></li>
-          <li style="margin-bottom: 10px;"><strong>เวลา:</strong> <%= @booking.start_time.strftime("%H:%M") %> - <%= @booking.end_time.strftime("%H:%M") %></li>
+          <li style="margin-bottom: 10px;"><strong>ช่วงเวลาที่จอง:</strong></li>
+          <% @booking.booking_slots.order(:start_time).each do |slot| %>
+            <li style="margin-left: 20px; margin-bottom: 5px;">
+              <%= slot.start_time.strftime("%d/%m/%Y") %> เวลา <%= slot.start_time.strftime("%H:%M") %> - <%= slot.end_time.strftime("%H:%M") %>
+            </li>
+          <% end %>
         </ul>
       </div>
 

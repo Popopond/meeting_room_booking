@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_19_181320) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_19_201429) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -48,6 +48,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_181320) do
     t.datetime "end_time", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "complete", default: false
     t.index ["booking_id", "start_time", "end_time"], name: "index_booking_slots_on_booking_id_and_start_time_and_end_time"
     t.index ["booking_id"], name: "index_booking_slots_on_booking_id"
     t.index ["start_time", "end_time"], name: "index_booking_slots_on_start_time_and_end_time"
@@ -63,6 +64,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_181320) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "title"
+    t.text "description"
+    t.integer "expected_participants"
     t.index ["room_id"], name: "index_bookings_on_room_id"
     t.index ["user_id"], name: "index_bookings_on_user_id"
   end
@@ -74,7 +77,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_181320) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "confirmation_code"
+    t.bigint "booking_slot_id", null: false
     t.index ["booking_id"], name: "index_check_ins_on_booking_id"
+    t.index ["booking_slot_id"], name: "index_check_ins_on_booking_slot_id"
     t.index ["user_id"], name: "index_check_ins_on_user_id"
   end
 
@@ -134,6 +139,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_181320) do
   add_foreign_key "booking_slots", "bookings"
   add_foreign_key "bookings", "rooms"
   add_foreign_key "bookings", "users"
+  add_foreign_key "check_ins", "booking_slots"
   add_foreign_key "check_ins", "bookings"
   add_foreign_key "check_ins", "users"
   add_foreign_key "meeting_participants", "bookings"
