@@ -15,7 +15,10 @@ Rails.application.routes.draw do
     end
   end
   resources :statuses
-  resources :rooms
+  resources :rooms do
+    resource :qr_code, controller: 'room_qr_codes', only: [:show]
+    get 'qr_code/image', to: 'qr_codes#room', as: 'qr_code_image'
+  end
   resources :users
 
   namespace :api do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_19_201429) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_20_180923) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -93,6 +93,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_201429) do
     t.index ["user_id"], name: "index_meeting_participants_on_user_id"
   end
 
+  create_table "room_qr_codes", force: :cascade do |t|
+    t.bigint "room_id", null: false
+    t.string "token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["room_id"], name: "index_room_qr_codes_on_room_id"
+    t.index ["token"], name: "index_room_qr_codes_on_token", unique: true
+  end
+
   create_table "rooms", force: :cascade do |t|
     t.string "name"
     t.integer "capacity"
@@ -144,4 +153,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_201429) do
   add_foreign_key "check_ins", "users"
   add_foreign_key "meeting_participants", "bookings"
   add_foreign_key "meeting_participants", "users"
+  add_foreign_key "room_qr_codes", "rooms"
 end
