@@ -123,21 +123,37 @@ class Booking < ApplicationRecord
     if booking_slots.empty?
       errors.add(:base, "ต้องระบุช่วงเวลาอย่างน้อย 1 ช่วง")
     end
+
+    # ตรวจสอบว่าช่วงเวลาไม่ซ้ำซ้อนกันเอง
+    slots = booking_slots.sort_by(&:start_time)
+    slots.each_cons(2) do |slot1, slot2|
+      if slot1.end_time > slot2.start_time
+        errors.add(:base, "ช่วงเวลาที่เลือกซ้ำซ้อนกัน")
+        break
+      end
+    end
   end
 
   def room_availability
     return if room.blank? || booking_slots.empty?
 
-    booking_slots.each do |slot|
-      overlapping_bookings = room.bookings.where.not(id: id)
-        .joins(:booking_slots)
+    # จัดเรียงช่วงเวลาตาม start_time
+    sorted_slots = booking_slots.sort_by(&:start_time)
+    
+    # ตรวจสอบการจองที่ซ้ำซ้อนสำหรับแต่ละช่วงเวลา
+    sorted_slots.each do |slot|
+      overlapping_slots = BookingSlot
+        .joins(:booking)
+        .where(booking: { room_id: room_id })
+        .where.not(booking_id: id)
         .where(
-          "booking_slots.start_time < ? AND booking_slots.end_time > ?",
-          slot.end_time, slot.start_time
+          "(booking_slots.start_time, booking_slots.end_time) OVERLAPS (?, ?)",
+          slot.start_time, slot.end_time
         )
 
-      if overlapping_bookings.exists?
+      if overlapping_slots.exists?
         errors.add(:base, "ห้องนี้ถูกจองในช่วงเวลา #{slot.start_time.strftime("%H:%M")} - #{slot.end_time.strftime("%H:%M")} แล้ว")
+        break
       end
     end
   end
