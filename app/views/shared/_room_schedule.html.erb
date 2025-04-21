@@ -37,15 +37,19 @@
                         b.booking_slots.any? do |slot|
                           booking_start = slot.start_time.in_time_zone('Asia/Bangkok')
                           booking_end = slot.end_time.in_time_zone('Asia/Bangkok')
+                          check_in_deadline = booking_start + 15.minutes
+                          current_time_bangkok = Time.current.in_time_zone('Asia/Bangkok')
                           
-                          # ตรวจสอบว่าช่วงเวลาซ้อนทับกันหรือไม่
-                          # 1. ช่วงเวลาปัจจุบันเริ่มต้นระหว่างการจอง
-                          # 2. ช่วงเวลาปัจจุบันสิ้นสุดระหว่างการจอง
-                          # 3. การจองอยู่ในช่วงเวลาปัจจุบัน
-                          (current_time >= booking_start && current_time < booking_end) ||
-                          (next_time > booking_start && next_time <= booking_end) ||
-                          (booking_start >= current_time && booking_end <= next_time) ||
-                          (booking_start <= current_time && booking_end >= next_time)
+                          # ตรวจสอบว่าการจองยังไม่หมดอายุ (ไม่เกิน 15 นาทีหลังเริ่ม)
+                          is_not_expired = current_time_bangkok <= check_in_deadline || b.complete?
+                          
+                          # ตรวจสอบว่าช่วงเวลาซ้อนทับกันหรือไม่ และยังไม่หมดอายุ
+                          is_not_expired && (
+                            (current_time >= booking_start && current_time < booking_end) ||
+                            (next_time > booking_start && next_time <= booking_end) ||
+                            (booking_start >= current_time && booking_end <= next_time) ||
+                            (booking_start <= current_time && booking_end >= next_time)
+                          )
                         end
                       end
                     %>

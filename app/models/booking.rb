@@ -12,6 +12,7 @@ class Booking < ApplicationRecord
 
   before_create :generate_confirmation_code
   after_create :send_confirmation_email
+  after_create :schedule_auto_reset
 
   accepts_nested_attributes_for :booking_slots, allow_destroy: true, reject_if: :all_blank
 
@@ -110,6 +111,46 @@ class Booking < ApplicationRecord
     end
   end
 
+  def auto_reset_room
+    current_time = Time.zone.now
+    expired_slots = []
+    all_slots_expired = true
+    
+    # ใช้ loaded booking_slots จาก eager loading
+    booking_slots.each do |slot|
+      next if slot.complete?
+      
+      slot_start = slot.start_time.in_time_zone
+      check_in_deadline = slot_start + 15.minutes
+      
+      if current_time > check_in_deadline
+        expired_slots << slot
+      else
+        all_slots_expired = false
+      end
+    end
+
+    return if expired_slots.empty?
+
+    # ทำ transaction เพื่อให้การอัพเดทข้อมูลเป็น atomic
+    Booking.transaction do
+      if all_slots_expired
+        # ถ้าทุก slots หมดเวลา ลบการจองทั้งหมด
+        available_status = Status.find_by(status_name: "Available")
+        room.update!(status_id: available_status&.id)
+        self.destroy!
+      else
+        # ลบเฉพาะ slots ที่หมดเวลา
+        expired_slots.each(&:destroy!)
+        # อัพเดทสถานะห้องถ้าไม่มีการจองที่ active
+        unless booking_slots.any? { |slot| !slot.complete? && current_time <= (slot.start_time.in_time_zone + 15.minutes) }
+          available_status = Status.find_by(status_name: "Available")
+          room.update!(status_id: available_status&.id)
+        end
+      end
+    end
+  end
+
   private
 
   def generate_confirmation_code
@@ -160,5 +201,11 @@ class Booking < ApplicationRecord
 
   def send_confirmation_email
     BookingMailer.with(booking: self).confirmation_email.deliver_later
+  end
+
+  def schedule_auto_reset
+    booking_slots.each do |slot|
+      AutoResetRoomJob.set(wait_until: slot.start_time + 15.minutes).perform_later(id)
+    end
   end
 end

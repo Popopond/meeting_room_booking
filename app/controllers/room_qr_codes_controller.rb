@@ -3,8 +3,8 @@ class RoomQrCodesController < ApplicationController
   before_action :set_room
 
   def show
-    # Generate QR code URL for the room
-    qr_code_url = room_url(@room)
+    # Generate QR code URL for the room's QR code page
+    qr_code_url = room_qr_code_url(@room)
 
     # Generate QR code
     @qr = RQRCode::QRCode.new(qr_code_url, size: 10, level: :h)
@@ -16,7 +16,7 @@ class RoomQrCodesController < ApplicationController
   end
 
   def image
-    qr_code_url = room_url(@room)
+    qr_code_url = room_qr_code_url(@room)
     qr = RQRCode::QRCode.new(qr_code_url, size: 10, level: :h)
     send_data qr.as_png(size: 300), type: "image/png", disposition: "inline"
   end
