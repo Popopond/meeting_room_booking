@@ -8,46 +8,51 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <% @bookings.each do |booking| %>
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex justify-between items-start mb-4">
-          <div>
-            <h2 class="text-xl font-semibold"><%= booking.room.name %></h2>
-            <% if current_user.role == 'admin' %>
-              <p class="text-gray-600">ผู้จอง: <%= booking.user.username %> (<%= booking.user.email %>)</p>
-            <% end %>
-            
-            <% booking.booking_slots.order(start_time: :asc).each do |slot| %>
-              <div class="mt-2">
-                <p class="text-gray-600">วันที่: <%= slot.start_time.strftime("%d/%m/%Y") %></p>
-                <p class="text-gray-600">เวลา: <%= slot.start_time.strftime("%H:%M") %> - <%= slot.end_time.strftime("%H:%M") %></p>
-              </div>
-            <% end %>
-          </div>
-
-          <% if booking.check_in.present? %>
-            <span class="text-green-500"><%= booking.status %></span>
-          <% elsif booking.check_in_expired? %>
-            <span class="text-red-500"><%= booking.status %></span>
-          <% else %>
-            <span class="text-yellow-500"><%= booking.status %></span>
-          <% end %>
-        </div>
-
-        <div class="border-t pt-4">
-          <div class="flex justify-between items-center">
-            <div class="text-sm">
-              <p class="font-semibold">รหัสยืนยัน:</p>
-              <p class="font-mono"><%= booking.confirmation_code %></p>
+      <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+        <div class="flex-1">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h2 class="text-xl font-semibold mb-2"><%= booking.room.name %></h2>
+              <% if current_user.role == 'admin' %>
+                <p class="text-gray-600 mb-2">ผู้จอง: <%= booking.user.username %> (<%= booking.user.email %>)</p>
+              <% end %>
+              
+              <% booking.booking_slots.order(start_time: :asc).each do |slot| %>
+                <div class="mt-2">
+                  <p class="text-gray-600">วันที่: <%= slot.start_time.strftime("%d/%m/%Y") %></p>
+                  <p class="text-gray-600">เวลา: <%= slot.start_time.strftime("%H:%M") %> - <%= slot.end_time.strftime("%H:%M") %></p>
+                </div>
+              <% end %>
             </div>
 
-            <div class="flex space-x-2">
-              <%= link_to "ดูรายละเอียด", booking_path(booking), class: "text-violet-500 hover:text-violet-700" %>
+            <div>
+              <% if booking.check_in.present? && booking.complete? %>
+                <span class="inline-block px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">เช็คอินแล้ว</span>
+              <% elsif booking.check_in.present? && !booking.complete? %>
+                <span class="inline-block px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 whitespace-nowrap">เช็คอินบางส่วน</span>
+              <% elsif booking.check_in_expired? %>
+                <span class="inline-block px-3 py-1 rounded-full text-sm bg-red-100 text-red-800 whitespace-nowrap">หมดเวลาเช็คอิน</span>
+              <% else %>
+                <span class="inline-block px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800">รอเช็คอิน</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t pt-4 mt-auto">
+          <div class="flex flex-col space-y-2">
+            <div class="flex items-center">
+              <span class="text-gray-600 text-sm">รหัสยืนยัน:</span>
+              <span class="ml-2 font-mono text-sm"><%= booking.confirmation_code %></span>
+            </div>
+            <div class="flex items-center space-x-4">
+              <%= link_to "ดูรายละเอียด", booking_path(booking), class: "text-violet-500 hover:text-violet-700 text-sm" %>
               <% if current_user.role == 'admin' || !booking.complete? %>
                 <%= button_to "ยกเลิกการจอง", 
                     cancel_booking_path(booking), 
                     method: :delete,
                     form: { data: { turbo_confirm: "คุณแน่ใจหรือไม่ที่จะยกเลิกการจองนี้?" } },
-                    class: "text-red-500 hover:text-red-700 bg-transparent border-none cursor-pointer" %>
+                    class: "text-red-500 hover:text-red-700 bg-transparent border-none cursor-pointer text-sm" %>
               <% end %>
             </div>
           </div>

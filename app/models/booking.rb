@@ -61,26 +61,34 @@ class Booking < ApplicationRecord
   end
 
   def can_check_in?
-    return false if complete || check_in.present?
+    return false if complete
 
     current_time = Time.zone.now
 
-    # Find the next available slot for check-in
-    next_slot = booking_slots.order(start_time: :asc).find do |slot|
+    # หา slot ที่สามารถเช็คอินได้
+    available_slot = booking_slots.order(start_time: :asc).find do |slot|
+      next if slot.complete?
+
       slot_start = slot.start_time.in_time_zone
       slot_check_in_deadline = slot_start + 15.minutes
+
+      # สามารถเช็คอินได้ถ้าอยู่ในช่วงเวลาที่กำหนด
       current_time.between?(slot_start, slot_check_in_deadline)
     end
 
-    next_slot.present?
+    available_slot.present?
   end
 
   def current_or_next_slot
     current_time = Time.zone.now
 
+    # หา slot ที่สามารถเช็คอินได้ตอนนี้
     booking_slots.order(start_time: :asc).find do |slot|
+      next if slot.complete?
+
       slot_start = slot.start_time.in_time_zone
       slot_check_in_deadline = slot_start + 15.minutes
+
       current_time.between?(slot_start, slot_check_in_deadline)
     end
   end
@@ -115,14 +123,14 @@ class Booking < ApplicationRecord
     current_time = Time.zone.now
     expired_slots = []
     all_slots_expired = true
-    
+
     # ใช้ loaded booking_slots จาก eager loading
     booking_slots.each do |slot|
       next if slot.complete?
-      
+
       slot_start = slot.start_time.in_time_zone
       check_in_deadline = slot_start + 15.minutes
-      
+
       if current_time > check_in_deadline
         expired_slots << slot
       else
