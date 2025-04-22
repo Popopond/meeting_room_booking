@@ -14,7 +14,6 @@
             <p class="font-medium">หัวข้อ: <%= @room.current_booking.title %></p>
             <p>เวลา: <%= @room.current_booking.start_time.strftime("%H:%M") %> - <%= @room.current_booking.end_time.strftime("%H:%M") %></p>
             <p>ผู้จอง: <%= @room.current_booking.user.username %></p>
-            <p>จำนวนผู้เข้าร่วม: <%= @room.current_booking.expected_participants %></p>
           </div>
         <% else %>
           <p class="text-gray-600">ไม่มีผู้จองในขณะนี้</p>

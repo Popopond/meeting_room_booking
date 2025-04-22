@@ -33,6 +33,9 @@
                     <% next_time = current_time + 30.minutes %>
                     <% 
                       room_bookings = @bookings[room.id] || []
+                      slot_start_time = current_time
+                      slot_end_time = current_time + 30.minutes
+                      
                       booking = room_bookings.find do |b|
                         b.booking_slots.any? do |slot|
                           booking_start = slot.start_time.in_time_zone('Asia/Bangkok')
@@ -45,10 +48,9 @@
                           
                           # ตรวจสอบว่าช่วงเวลาซ้อนทับกันหรือไม่ และยังไม่หมดอายุ
                           is_not_expired && (
-                            (current_time >= booking_start && current_time < booking_end) ||
-                            (next_time > booking_start && next_time <= booking_end) ||
-                            (booking_start >= current_time && booking_end <= next_time) ||
-                            (booking_start <= current_time && booking_end >= next_time)
+                            (slot_start_time >= booking_start && slot_start_time < booking_end) ||
+                            (slot_end_time > booking_start && slot_end_time <= booking_end) ||
+                            (booking_start >= slot_start_time && booking_end <= slot_end_time)
                           )
                         end
                       end

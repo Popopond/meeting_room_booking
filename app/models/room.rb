@@ -27,6 +27,7 @@ class Room < ApplicationRecord
     def next_booking
       bookings.joins(:booking_slots)
               .where("booking_slots.start_time > ?", Time.current)
+              .where("booking_slots.start_time + INTERVAL '15 minutes' > ? OR bookings.complete = ?", Time.current, true)
               .order("booking_slots.start_time ASC")
               .first
     end

@@ -170,12 +170,11 @@ class BookingsController < ApplicationController
   private
 
   def set_booking
-    unless params[:id] =~ /^\d+$/
-      render json: { error: "Invalid booking ID" }, status: :bad_request
-      return
+    @booking = if current_user.role == "admin"
+      Booking.find(params[:id])
+    else
+      current_user.bookings.find(params[:id])
     end
-
-    @booking = current_user.bookings.find(params[:id])
   end
 
   def booking_params
