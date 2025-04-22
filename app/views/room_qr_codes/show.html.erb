@@ -12,8 +12,40 @@
         <% if @room.current_booking %>
           <div class="bg-gray-50 p-4 rounded">
             <p class="font-medium">หัวข้อ: <%= @room.current_booking.title %></p>
-            <p>เวลา: <%= @room.current_booking.start_time.strftime("%H:%M") %> - <%= @room.current_booking.end_time.strftime("%H:%M") %></p>
-            <p>ผู้จอง: <%= @room.current_booking.user.username %></p>
+            <p class="text-gray-600">วันที่: <%= @room.current_booking.start_time.strftime("%d/%m/%Y") %></p>
+            <p class="text-gray-600">เวลา: <%= @room.current_booking.start_time.strftime("%H:%M") %> - <%= @room.current_booking.end_time.strftime("%H:%M") %></p>
+            <p class="flex items-center">
+              <span>ผู้จอง:</span>
+              <span class="relative inline-block mx-2">
+                <% if @room.current_booking.user.avatar.attached? %>
+                  <%= image_tag @room.current_booking.user.avatar, class: "w-6 h-6 rounded-full object-cover" %>
+                <% else %>
+                  <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-xs text-gray-500"><%= @room.current_booking.user.username[0].upcase %></span>
+                  </div>
+                <% end %>
+              </span>
+              <%= @room.current_booking.user.username %>
+            </p>
+            <% if @room.current_booking.participants.any? %>
+              <p class="flex flex-wrap items-center gap-2">
+                <span class="mr-1">ผู้เข้าร่วม:</span>
+                <% @room.current_booking.participants.each do |participant| %>
+                  <span class="flex items-center">
+                    <span class="relative inline-block mr-1">
+                      <% if participant.avatar.attached? %>
+                        <%= image_tag participant.avatar, class: "w-6 h-6 rounded-full object-cover" %>
+                      <% else %>
+                        <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span class="text-xs text-gray-500"><%= participant.username[0].upcase %></span>
+                        </div>
+                      <% end %>
+                    </span>
+                    <%= participant.username %><%= "," unless participant == @room.current_booking.participants.last %>
+                  </span>
+                <% end %>
+              </p>
+            <% end %>
           </div>
         <% else %>
           <p class="text-gray-600">ไม่มีผู้จองในขณะนี้</p>
@@ -25,8 +57,40 @@
         <% if @room.next_booking %>
           <div class="bg-gray-50 p-4 rounded">
             <p class="font-medium">หัวข้อ: <%= @room.next_booking.title %></p>
-            <p>เวลา: <%= @room.next_booking.start_time.strftime("%H:%M") %> - <%= @room.next_booking.end_time.strftime("%H:%M") %></p>
-            <p>ผู้จอง: <%= @room.next_booking.user.username %></p>
+            <p class="text-gray-600">วันที่: <%= @room.next_booking.start_time.strftime("%d/%m/%Y") %></p>
+            <p class="text-gray-600">เวลา: <%= @room.next_booking.start_time.strftime("%H:%M") %> - <%= @room.next_booking.end_time.strftime("%H:%M") %></p>
+            <p class="flex items-center">
+              <span>ผู้จอง:</span>
+              <span class="relative inline-block mx-2">
+                <% if @room.next_booking.user.avatar.attached? %>
+                  <%= image_tag @room.next_booking.user.avatar, class: "w-6 h-6 rounded-full object-cover" %>
+                <% else %>
+                  <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-xs text-gray-500"><%= @room.next_booking.user.username[0].upcase %></span>
+                  </div>
+                <% end %>
+              </span>
+              <%= @room.next_booking.user.username %>
+            </p>
+            <% if @room.next_booking.participants.any? %>
+              <p class="flex flex-wrap items-center gap-2">
+                <span class="mr-1">ผู้เข้าร่วม:</span>
+                <% @room.next_booking.participants.each do |participant| %>
+                  <span class="flex items-center">
+                    <span class="relative inline-block mr-1">
+                      <% if participant.avatar.attached? %>
+                        <%= image_tag participant.avatar, class: "w-6 h-6 rounded-full object-cover" %>
+                      <% else %>
+                        <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                          <span class="text-xs text-gray-500"><%= participant.username[0].upcase %></span>
+                        </div>
+                      <% end %>
+                    </span>
+                    <%= participant.username %><%= "," unless participant == @room.next_booking.participants.last %>
+                  </span>
+                <% end %>
+              </p>
+            <% end %>
           </div>
         <% else %>
           <p class="text-gray-600">ไม่มีผู้จองถัดไป</p>
