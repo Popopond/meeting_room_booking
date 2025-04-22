@@ -27,13 +27,42 @@
             <span class="text-gray-600">รายละเอียด:</span>
             <span class="font-medium"><%= @booking.description %></span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">จำนวนผู้เข้าร่วมที่คาดว่าจะมา:</span>
-            <span class="font-medium"><%= @booking.expected_participants %> คน</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">ผู้จองการประชุม:</span>
-            <span class="font-medium"><%= @booking.user.username %></span>
+          <div class="space-y-3">
+            <div class="flex items-center">
+              <span class="text-gray-600 w-24">ผู้จอง:</span>
+              <div class="flex items-center">
+                <% if @booking.user.avatar.attached? %>
+                  <%= image_tag @booking.user.avatar, class: "w-6 h-6 rounded-full object-cover mr-2" %>
+                <% else %>
+                  <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center mr-2">
+                    <span class="text-xs text-gray-500"><%= @booking.user.username[0].upcase %></span>
+                  </div>
+                <% end %>
+                <span class="font-medium"><%= @booking.user.username %></span>
+              </div>
+            </div>
+            <% if @booking.participants.any? %>
+              <div class="flex">
+                <span class="text-gray-600 w-24">ผู้เข้าร่วม:</span>
+                <div class="flex flex-wrap gap-2">
+                  <% @booking.participants.each do |participant| %>
+                    <div class="flex items-center">
+                      <% if participant.avatar.attached? %>
+                        <%= image_tag participant.avatar, class: "w-6 h-6 rounded-full object-cover mr-2" %>
+                      <% else %>
+                        <div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center mr-2">
+                          <span class="text-xs text-gray-500"><%= participant.username[0].upcase %></span>
+                        </div>
+                      <% end %>
+                      <span class="font-medium"><%= participant.username %></span>
+                      <% unless participant == @booking.participants.last %>
+                        <span class="mx-2">,</span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">ช่วงเวลาที่จอง:</span>
