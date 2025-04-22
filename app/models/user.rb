@@ -10,12 +10,15 @@ class User < ApplicationRecord
 
     has_one_attached :avatar
 
+    # Callbacks
+    before_validation :strip_whitespace
+
     # Validations
     validates :username, presence: true,
                         uniqueness: { case_sensitive: false },
-                        length: { minimum: 3, maximum: 20 },
-                        format: { with: /\A[a-zA-Z0-9_]+\z/, message: "สามารถใช้ได้เฉพาะตัวอักษร ตัวเลข และ _ เท่านั้น" }
+                        length: { minimum: 3, maximum: 20 }
 
+    validate :username_format
     validates :email, presence: true,
                      uniqueness: { case_sensitive: false },
                      format: { with: URI::MailTo::EMAIL_REGEXP, message: "รูปแบบอีเมลไม่ถูกต้อง" }
@@ -27,6 +30,18 @@ class User < ApplicationRecord
     scope :exclude_user, ->(user) { where.not(id: user.id) }
 
     private
+
+    def strip_whitespace
+      self.username = username&.strip&.gsub(/\s+/, '')
+      self.email = email&.strip
+    end
+
+    def username_format
+      return unless username.present?
+      unless username =~ /\A[a-zA-Z0-9_]+\z/
+        errors.add(:username, "สามารถใช้ได้เฉพาะตัวอักษร ตัวเลข และ _ เท่านั้น")
+      end
+    end
 
     def password_complexity
       return if password.blank? || password =~ /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/

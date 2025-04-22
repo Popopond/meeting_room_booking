@@ -88,7 +88,7 @@ class BookingsController < ApplicationController
       if @booking.save
         update_room_status
         format.html {
-          flash[:success] = success_message
+          flash[:notice] = success_message
           redirect_to booking_url(@booking)
         }
         format.json { render :show, status: :created, location: @booking }

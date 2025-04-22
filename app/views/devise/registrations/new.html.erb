@@ -6,12 +6,23 @@
 
     <div class="flex flex-col">
       <%= f.label :username, class: "text-gray-700 font-medium" %>
-      <%= f.text_field :username, autofocus: true, class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+      <%= f.text_field :username, 
+          autofocus: true, 
+          class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none #{resource.errors[:username].any? ? 'border-red-500' : ''}" %>
+      <% if resource.errors[:username].any? %>
+        <p class="mt-1 text-sm text-red-500"><%= resource.errors[:username].join(", ") %></p>
+      <% end %>
     </div>
 
     <div class="flex flex-col">
       <%= f.label :email, class: "text-gray-700 font-medium" %>
-      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+      <%= f.email_field :email, 
+          autofocus: true, 
+          autocomplete: "email", 
+          class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none #{resource.errors[:email].any? ? 'border-red-500' : ''}" %>
+      <% if resource.errors[:email].any? %>
+        <p class="mt-1 text-sm text-red-500"><%= resource.errors[:email].join(", ") %></p>
+      <% end %>
     </div>
 
     <div class="flex flex-col">
@@ -19,12 +30,22 @@
       <% if @minimum_password_length %>
         <div class="text-sm text-gray-600 mb-2">Min <%= @minimum_password_length %> chars (a-z, A-Z, 0-9)</div>
       <% end %>
-      <%= f.password_field :password, autocomplete: "new-password", class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+      <%= f.password_field :password, 
+          autocomplete: "new-password", 
+          class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none #{resource.errors[:password].any? ? 'border-red-500' : ''}" %>
+      <% if resource.errors[:password].any? %>
+        <p class="mt-1 text-sm text-red-500"><%= resource.errors[:password].join(", ") %></p>
+      <% end %>
     </div>
 
     <div class="flex flex-col">
       <%= f.label :password_confirmation, class: "text-gray-700 font-medium" %>
-      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none" %>
+      <%= f.password_field :password_confirmation, 
+          autocomplete: "new-password", 
+          class: "mt-1 px-4 py-2 border rounded-md focus:ring focus:ring-violet-300 focus:outline-none #{resource.errors[:password_confirmation].any? ? 'border-red-500' : ''}" %>
+      <% if resource.errors[:password_confirmation].any? %>
+        <p class="mt-1 text-sm text-red-500"><%= resource.errors[:password_confirmation].join(", ") %></p>
+      <% end %>
     </div>
 
     <div class="mt-4">

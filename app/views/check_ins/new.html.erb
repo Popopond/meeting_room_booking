@@ -78,9 +78,10 @@
               <%= f.label :confirmation_code, "รหัสยืนยันการจอง", class: "block text-sm font-medium text-gray-700" %>
               <div class="mt-1">
                 <%= f.text_field :confirmation_code, 
-                    value: params[:code],
+                    value: params[:code]&.strip,
                     class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm",
-                    placeholder: "กรอกรหัสยืนยัน 6 หลัก" %>
+                    placeholder: "กรอกรหัสยืนยัน 6 หลัก",
+                    oninput: "this.value = this.value.replace(/\\s+/g, '')" %>
               </div>
               <p class="mt-2 text-sm text-gray-500">รหัสยืนยันจะถูกส่งไปที่อีเมลของคุณหลังจากจองห้องสำเร็จ</p>
             </div>

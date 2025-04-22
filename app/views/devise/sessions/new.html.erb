@@ -1,9 +1,7 @@
 <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" data-testid="login-page">
   <div class="max-w-md w-full" data-testid="login-container">
     <div class="text-center" data-testid="login-header">
-      <h2 class="mt-6 text-3xl font-extrabold text-gray-900" data-testid="login-title">
-        Sign in to your account
-      </h2>
+      <h2 class="text-2xl font-bold text-center mb-6">Log in</h2>
       <p class="mt-2 text-sm text-gray-600" data-testid="login-subtitle">
         Or
         <%= link_to "Create new account", new_registration_path(resource_name), 
@@ -14,6 +12,7 @@
 
     <%= form_for(resource, as: resource_name, url: session_path(resource_name), 
         html: { class: "mt-8 space-y-6", data_testid: "login-form" }) do |f| %>
+
       <div class="rounded-md shadow-sm -space-y-px" data-testid="login-inputs">
         <div>
           <%= f.label :email, "Email", class: "sr-only" %>
