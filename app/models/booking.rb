@@ -72,7 +72,7 @@ class Booking < ApplicationRecord
       slot_start = slot.start_time.in_time_zone
       slot_check_in_deadline = slot_start + 15.minutes
 
-      # สามารถเช็คอินได้ถ้าอยู่ในช่วงเวลาที่กำหนด
+      # สามารถเช็คอินได้ในช่วง 15 นาทีแรกของ slot
       current_time.between?(slot_start, slot_check_in_deadline)
     end
 
@@ -89,6 +89,7 @@ class Booking < ApplicationRecord
       slot_start = slot.start_time.in_time_zone
       slot_check_in_deadline = slot_start + 15.minutes
 
+      # สามารถเช็คอินได้ในช่วง 15 นาทีแรกของ slot
       current_time.between?(slot_start, slot_check_in_deadline)
     end
   end

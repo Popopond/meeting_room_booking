@@ -19,10 +19,19 @@ class BookingsController < ApplicationController
   end
 
   def show
-    @booking = Booking.includes(:booking_slots).find(params[:id])
+    @booking = Booking.includes(
+      :room,
+      :user,
+      :booking_slots,
+      :check_in,
+      :participants,
+      user: { avatar_attachment: :blob },
+      participants: { avatar_attachment: :blob }
+    ).find(params[:id])
     @available_users = User.exclude_user(@booking.user)
                           .where.not(id: @booking.participants.pluck(:id))
-                          .select(:id, :username, :avatar)
+                          .includes(avatar_attachment: :blob)
+                          .select(:id, :username)
   end
 
   def new
