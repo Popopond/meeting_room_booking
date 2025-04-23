@@ -28,10 +28,18 @@ class BookingsController < ApplicationController
       user: { avatar_attachment: :blob },
       participants: { avatar_attachment: :blob }
     ).find(params[:id])
-    @available_users = User.exclude_user(@booking.user)
-                          .where.not(id: @booking.participants.pluck(:id))
+
+    # Search for available users
+    @available_users = User.available_for_booking(@booking)
+                          .search(params[:search])
                           .includes(avatar_attachment: :blob)
-                          .select(:id, :username)
+                          .order(:username)
+                          .limit(10)
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream { render turbo_stream: turbo_stream.update("search-results", partial: "search_results") }
+    end
   end
 
   def new

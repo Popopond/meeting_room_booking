@@ -1,0 +1,25 @@
+<%= turbo_stream.update "available-users" do %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <% @available_users.each do |user| %>
+      <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+        <div class="flex items-center space-x-3">
+          <% if user.avatar.attached? %>
+            <%= image_tag user.avatar, class: "w-8 h-8 rounded-full object-cover" %>
+          <% else %>
+            <div class="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center">
+              <%= user.username.first.upcase %>
+            </div>
+          <% end %>
+          <span class="font-medium"><%= user.username %></span>
+        </div>
+        <%= button_to add_participant_booking_path(@booking, user_id: user.id),
+            method: :post,
+            class: "text-violet-500 hover:text-violet-700" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %> 

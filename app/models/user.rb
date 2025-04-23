@@ -27,7 +27,23 @@ class User < ApplicationRecord
     validate :avatar_size
 
     # Scopes
-    scope :exclude_user, ->(user) { where.not(id: user.id) }
+    scope :search, ->(query) {
+      return all if query.blank?
+      
+      where(
+        "username ILIKE :query OR email ILIKE :query",
+        query: "%#{query}%"
+      )
+    }
+
+    scope :exclude_user, ->(user) {
+      where.not(id: user&.id)
+    }
+
+    scope :available_for_booking, ->(booking) {
+      exclude_user(booking.user)
+        .where.not(id: booking.participants.pluck(:id))
+    }
 
     private
 
