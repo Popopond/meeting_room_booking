@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       delete :cancel
       post :add_participant
       delete :remove_participant
+      post :check_in
     end
   end
   resources :statuses
