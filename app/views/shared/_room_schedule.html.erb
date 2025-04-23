@@ -43,29 +43,25 @@
                           check_in_deadline = booking_start + 15.minutes
                           current_time_bangkok = Time.current.in_time_zone('Asia/Bangkok')
                           
-                          # ตรวจสอบว่าการจองยังไม่หมดอายุ (ไม่เกิน 15 นาทีหลังเริ่ม)
-                          is_not_expired = current_time_bangkok <= check_in_deadline || b.complete?
-                          
-                          # ตรวจสอบว่าช่วงเวลาซ้อนทับกันหรือไม่ และยังไม่หมดอายุ
-                          is_not_expired && (
-                            (slot_start_time >= booking_start && slot_start_time < booking_end) ||
-                            (slot_end_time > booking_start && slot_end_time <= booking_end) ||
-                            (booking_start >= slot_start_time && booking_end <= slot_end_time)
-                          )
+                          # ตรวจสอบว่าช่วงเวลาซ้อนทับกันหรือไม่
+                          (slot_start_time >= booking_start && slot_start_time < booking_end) ||
+                          (slot_end_time > booking_start && slot_end_time <= booking_end) ||
+                          (booking_start >= slot_start_time && booking_end <= slot_end_time)
                         end
                       end
                     %>
                     <% is_past_datetime = current_time < Time.current.in_time_zone('Asia/Bangkok') %>
+                    <% is_past_booking = booking && is_past_datetime %>
                     <% status = booking ? 'Unavailable' : 'Available' %>
                     
                     <td class="p-2 border-r border-gray-200 last:border-r-0">
                       <% if status == 'Unavailable' %>
-                        <%= content_tag(:div, class: "rounded-2xl border border-[#4475FF]/30 bg-[#F5F8FF] p-4 text-center") do %>
-                          <div class="text-[#4475FF] font-medium">Unavailable</div>
+                        <%= content_tag(:div, class: "rounded-2xl border #{is_past_booking ? 'border-gray-300 bg-gray-50' : 'border-[#4475FF]/30 bg-[#F5F8FF]'} p-4 text-center") do %>
+                          <div class="<%= is_past_booking ? 'text-gray-500' : 'text-[#4475FF]' %> font-medium">Unavailable</div>
                           <% if booking.title.present? %>
-                            <div class="text-sm text-[#4475FF] mt-1"><%= booking.title %></div>
+                            <div class="text-sm <%= is_past_booking ? 'text-gray-500' : 'text-[#4475FF]' %> mt-1"><%= booking.title %></div>
                           <% end %>
-                          <div class="text-sm text-[#4475FF] mt-1"><%= booking.user.username %></div>
+                          <div class="text-sm <%= is_past_booking ? 'text-gray-500' : 'text-[#4475FF]' %> mt-1"><%= booking.user.username %></div>
                         <% end %>
                       <% else %>
                         <%= content_tag(:div, 
