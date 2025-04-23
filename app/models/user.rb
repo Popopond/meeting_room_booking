@@ -32,7 +32,7 @@ class User < ApplicationRecord
     private
 
     def strip_whitespace
-      self.username = username&.strip&.gsub(/\s+/, '')
+      self.username = username&.strip&.gsub(/\s+/, "")
       self.email = email&.strip
     end
 
