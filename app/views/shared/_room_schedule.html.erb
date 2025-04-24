@@ -11,7 +11,10 @@
             <tr class="border-b border-gray-200">
               <th class="p-4 w-32 border-r border-gray-200 sticky left-0 top-0 bg-white z-30">เวลา</th>
               <% rooms.each do |room| %>
-                <th class="p-3 px-6 font-medium border-r border-gray-200 last:border-r-0 sticky top-0 bg-white z-20"><%= room.name %></th>
+                <th class="p-3 px-6 font-medium border-r border-gray-200 last:border-r-0 sticky top-0 bg-white z-20">
+                  <div><%= room.name %></div>
+                  <div class="text-sm text-gray-400">จุ <%= room.capacity %> คน</div>
+                </th>
               <% end %>
             </tr>
           </thead>
@@ -50,7 +53,11 @@
                         end
                       end
                     %>
-                    <% is_past_datetime = current_time < Time.current.in_time_zone('Asia/Bangkok') %>
+                    <% 
+                      current_time_bangkok = Time.current.in_time_zone('Asia/Bangkok')
+                      is_past_deadline = current_time_bangkok > (current_time + 15.minutes)
+                      is_past_datetime = is_past_deadline
+                    %>
                     <% is_past_booking = booking && is_past_datetime %>
                     <% status = booking ? 'Unavailable' : 'Available' %>
                     
@@ -72,7 +79,9 @@
                             start_time: current_time,
                             end_time: current_time + 30.minutes
                           }) do %>
-                          <div class="#{is_past_datetime ? 'text-gray-400' : 'text-[#0BA811]'} font-medium">Available</div>
+                          <div class="#{is_past_datetime ? 'text-gray-400' : 'text-[#0BA811]'} font-medium">
+                            <%= is_past_datetime ? "-" : "Available" %>
+                          </div>
                         <% end %>
                       <% end %>
                     </td>
@@ -93,6 +102,99 @@ document.addEventListener('DOMContentLoaded', function() {
   let selectedRoomId = null
   let selectedDate = null
   let selectedTimes = []
+
+  // เพิ่มฟังก์ชันเลื่อนไปยังเวลาปัจจุบัน
+  function scrollToCurrentTime() {
+    const now = new Date()
+    const hours = now.getHours()
+    const minutes = now.getMinutes()
+    
+    // หาช่วงเวลาที่เหมาะสม
+    let targetHour = hours
+    let targetMinute = "00"
+    
+    // ถ้านาทีมากกว่า 30 และยังไม่เกิน 45 นาที ให้ชี้ไปที่ช่วง 30
+    if (minutes > 30 && minutes <= 45) {
+      targetMinute = "30"
+    } 
+    // ถ้านาทีน้อยกว่า 15 นาที ให้ชี้ไปที่ช่วงก่อนหน้า
+    else if (minutes <= 15) {
+      if (targetMinute === "30") {
+        targetMinute = "00"
+      } else {
+        targetHour = hours - 1
+        targetMinute = "30"
+      }
+    }
+    // ถ้านาทีมากกว่า 15 แต่ไม่เกิน 30 ให้ชี้ไปที่ช่วง 00
+    else if (minutes > 15 && minutes <= 30) {
+      targetMinute = "00"
+    }
+    
+    const currentTimeString = `${targetHour.toString().padStart(2, '0')}:${targetMinute}`
+    
+    // รอให้ DOM โหลดเสร็จสมบูรณ์
+    setTimeout(() => {
+      const tableContainer = document.querySelector('.overflow-y-auto')
+      if (!tableContainer) return
+
+      const timeSlots = document.querySelectorAll('td:first-child')
+      let targetSlot = null
+
+      // หาช่องเวลาที่ตรงกับเวลาปัจจุบัน
+      for (const slot of timeSlots) {
+        if (slot.textContent.startsWith(currentTimeString)) {
+          targetSlot = slot
+          break
+        }
+      }
+
+      // ถ้าไม่เจอเวลาตรง ให้หาเวลาที่ใกล้เคียง
+      if (!targetSlot) {
+        for (const slot of timeSlots) {
+          const slotTime = slot.textContent.split('-')[0].trim()
+          if (slotTime > currentTimeString) {
+            targetSlot = slot
+            break
+          }
+        }
+      }
+
+      // เลื่อนไปยังช่องเวลาที่พบ
+      if (targetSlot) {
+        // เลื่อนทั้งหน้าเว็บ
+        const yOffset = -100; // ระยะห่างจากด้านบนของหน้าจอ
+        const y = targetSlot.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        
+        window.scrollTo({
+          top: y,
+          behavior: 'smooth'
+        });
+
+        // เลื่อนตารางด้วย
+        const containerRect = tableContainer.getBoundingClientRect()
+        const targetRect = targetSlot.getBoundingClientRect()
+        const scrollOffset = targetRect.top - containerRect.top - (containerRect.height / 2) + tableContainer.scrollTop
+
+        setTimeout(() => {
+          tableContainer.scrollTo({
+            top: scrollOffset,
+            behavior: 'smooth'
+          });
+
+          // เพิ่มไฮไลท์ชั่วคราวที่ช่องเวลาปัจจุบัน
+          targetSlot.style.transition = 'background-color 0.5s'
+          targetSlot.style.backgroundColor = '#f0f0f0'
+          setTimeout(() => {
+            targetSlot.style.backgroundColor = ''
+          }, 2000)
+        }, 100);
+      }
+    }, 500)
+  }
+
+  // เรียกใช้ฟังก์ชันเลื่อนไปยังเวลาปัจจุบันเมื่อโหลดหน้า
+  scrollToCurrentTime()
 
   // เพิ่ม event listener ให้กับทุก time slot
   document.querySelectorAll('.time-slot').forEach(slot => {

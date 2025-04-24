@@ -58,13 +58,9 @@
                   <p>สามารถเช็คอินช่วงเวลา <%= current_slot.start_time.strftime("%H:%M") %> - <%= current_slot.end_time.strftime("%H:%M") %> ได้จนถึง <%= (current_slot.start_time + 15.minutes).strftime("%H:%M") %></p>
                 </div>
 
-                <%= form_with(url: check_ins_path, method: :post, data: { turbo: false }, class: "mt-6") do |f| %>
-                  <%= f.hidden_field :confirmation_code, value: @booking.confirmation_code %>
-                  <div class="flex justify-center">
-                    <%= f.submit "ยืนยันการเช็คอิน", 
-                        class: "bg-green-500 text-white px-8 py-3 rounded-lg shadow-md hover:bg-green-600 transition duration-300 ease-in-out text-lg font-semibold" %>
-                  </div>
-                <% end %>
+                <div class="mt-6">
+                  <p class="text-center text-gray-600">กรุณาเช็คอินภายใน 15 นาทีหลังจากเวลาเริ่มต้น</p>
+                </div>
               <% else %>
                 <div class="bg-gray-100 border-l-4 border-gray-500 text-gray-700 p-4">
                   <p>ยังไม่ถึงเวลาที่สามารถเช็คอินได้</p>
