@@ -64,54 +64,28 @@
               </div>
             <% end %>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">ช่วงเวลาที่จอง:</span>
-          </div>
-          <div class="space-y-2 pl-4">
-            <% @booking.booking_slots.order(start_time: :asc).each do |slot| %>
-              <div class="flex justify-between bg-gray-50 p-2 rounded">
-                <span class="text-gray-600"><%= slot.start_time.strftime("%d/%m/%Y") %></span>
-                <span class="font-medium"><%= slot.start_time.strftime("%H:%M") %> - <%= slot.end_time.strftime("%H:%M") %></span>
-              </div>
-            <% end %>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">สถานะ:</span>
-            <span class="font-medium"><%= @booking.status %></span>
-          </div>
         </div>
       </div>
 
-      <!-- Check-in section -->
-      <% if @booking.can_check_in? %>
-        <div class="border-t pt-6">
-          <div class="bg-violet-50 rounded-lg p-4 mb-4">
-            <div class="flex items-start">
-              <div class="flex-shrink-0">
-                <svg class="h-6 w-6 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+      <!-- Time Slots -->
+      <div class="border-t pt-6">
+        <h2 class="text-lg font-semibold mb-4">ช่วงเวลาที่จอง</h2>
+        <div class="space-y-3">
+          <% @booking.booking_slots.order(start_time: :asc).each do |slot| %>
+            <div class="flex justify-between items-center p-3 rounded-lg <%= slot.complete? ? 'bg-green-50' : 'bg-gray-50' %>">
+              <div>
+                <div class="font-medium"><%= slot.start_time.strftime("%d/%m/%Y") %></div>
+                <div class="text-sm text-gray-600"><%= slot.start_time.strftime("%H:%M") %> - <%= slot.end_time.strftime("%H:%M") %></div>
               </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-violet-800">เวลาเช็คอิน</h3>
-                <p class="mt-1 text-sm text-violet-600">
-                  กรุณาเช็คอินภายใน 15 นาทีหลังจากเวลาเริ่มต้น (<%= @booking.start_time.strftime("%H:%M") %>)
-                </p>
-              </div>
+              <% if slot.complete? %>
+                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">เช็คอินแล้ว</span>
+              <% end %>
             </div>
-          </div>
-          
-          <%= button_to check_in_booking_path(@booking), 
-              method: :post,
-              class: "w-full bg-violet-500 text-white py-3 px-4 rounded-lg hover:bg-violet-600 transition duration-300 flex items-center justify-center",
-              data: { turbo: false } do %>
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            เช็คอินเข้าห้องประชุม
           <% end %>
         </div>
-      <% elsif @booking.complete %>
+      </div>
+
+      <% if @booking.complete? %>
         <div class="border-t pt-6">
           <div class="bg-green-50 rounded-lg p-4">
             <div class="flex">
@@ -145,7 +119,7 @@
             </div>
           </div>
         </div>
-      <% elsif @booking.start_time > Time.current %>
+      <% else %>
         <div class="border-t pt-6">
           <div class="bg-blue-50 rounded-lg p-4">
             <div class="flex">
@@ -157,7 +131,7 @@
               <div class="ml-3">
                 <h3 class="text-sm font-medium text-blue-800">รอถึงเวลาเช็คอิน</h3>
                 <p class="mt-1 text-sm text-blue-600">
-                  คุณจะสามารถเช็คอินได้เมื่อถึงเวลาเริ่มต้นการจอง
+                  กรุณารอเช็คอินเมื่อถึงเวลาเริ่มต้นการจอง
                 </p>
               </div>
             </div>
