@@ -38,7 +38,7 @@ gem "thruster", require: false
 gem "devise", "~> 4.9"
 
 # QR Code generation
-gem "rqrcode", "~> 2.2"
+gem "rqrcode", "~> 3.1"
 
 gem "cloudinary", "~> 1.25"
 
