@@ -43,7 +43,7 @@ gem "rqrcode", "~> 2.2"
 gem "cloudinary", "~> 1.25"
 
 # CSS Framework
-gem "tailwindcss-rails", "~> 3.3.1"
+gem "tailwindcss-rails", "~> 4.2.3"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
