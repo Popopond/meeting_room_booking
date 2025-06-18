@@ -40,7 +40,7 @@ gem "devise", "~> 4.9"
 # QR Code generation
 gem "rqrcode", "~> 2.2"
 
-gem "cloudinary", "~> 1.25"
+gem "cloudinary", "~> 2.3"
 
 # CSS Framework
 gem "tailwindcss-rails", "~> 3.3.1"
